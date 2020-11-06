@@ -43,7 +43,7 @@ public class Localizacao extends javax.swing.JFrame {
     private static String status_Form = "", entidadeUtilizada = "";
     Retrofit_URL retrofit = new Retrofit_URL();
     StateController stateController = new StateController();
-    boolean jaBuscoEstados = false, jaBuscoCidades = false, jaListouTabelaEstados = false, jaListouTabelaCidades = false;
+    boolean jaBuscoEstados = false, jaBuscoCidades = false, jaListouTabelaEstados = false, jaListouTabelaCidades = false, jaListouTabelaNeighborhood = false;
     Long id_SelecionadoNaTabela_pais = null, id_SelecionadoNaTabela_estado = null, id_SelecionadoNaTabela_cidade = null, id_SelecionadoNaTabela_vizinhanca = null;
 
     public Localizacao() {
@@ -253,6 +253,27 @@ public class Localizacao extends javax.swing.JFrame {
         });
         corLinhaTabelaAnuidade(TABELA_cidade);
         TABELA_cidade.getTableHeader().setReorderingAllowed(false);      // BLOQUIA AS COLUNAS DA TABELA PARA NÃO MOVELAS DO LUGAR
+    }
+
+    public void listarTabelaNeighborhoodCadastradas(List<Neighborhood> neighborhoodCadastradas) {
+        //ORDENANDO LISTA
+        Collections.sort(neighborhoodCadastradas, (Neighborhood n1, Neighborhood n2) -> n1.getName().toUpperCase().compareTo(n2.getName().toUpperCase()));
+
+        DefaultTableModel dtma = (DefaultTableModel) TABELA_vizinhanca.getModel();
+        dtma.setNumRows(0);
+        TABELA_vizinhanca.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        TABELA_vizinhanca.getColumnModel().getColumn(1).setPreferredWidth(180);
+
+        TABELA_vizinhanca.getColumnModel().getColumn(0).setMinWidth(0); // OCULTA A COLUNA (ID) DA TABELA PARA NÃO APARECER PARA O USUARIO
+        TABELA_vizinhanca.getColumnModel().getColumn(0).setMaxWidth(0); // OCULTA A COLUNA (ID) DA TABELA PARA NÃO APARECER PARA O USUARIO
+        neighborhoodCadastradas.forEach((s) -> {
+            dtma.addRow(new Object[]{
+                s.getId(),
+                s.getName()
+            });
+        });
+        corLinhaTabelaAnuidade(TABELA_vizinhanca);
+        TABELA_vizinhanca.getTableHeader().setReorderingAllowed(false);      // BLOQUIA AS COLUNAS DA TABELA PARA NÃO MOVELAS DO LUGAR
     }
 
     public void corLinhaTabelaAnuidade(JTable tabela) {
@@ -467,7 +488,7 @@ public class Localizacao extends javax.swing.JFrame {
 
         jLabel9.setText("Estados cadastrados");
 
-        btn_TODOS_ESTADOS_.setText("Todos Estados");
+        btn_TODOS_ESTADOS_.setText("+  Estados");
         btn_TODOS_ESTADOS_.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_TODOS_ESTADOS_ActionPerformed(evt);
@@ -578,7 +599,7 @@ public class Localizacao extends javax.swing.JFrame {
             TABELA_cidade.getColumnModel().getColumn(1).setResizable(false);
         }
 
-        btn_TODAS_CIDADES_.setText("Todas Cidades");
+        btn_TODAS_CIDADES_.setText("+  Cidades");
         btn_TODAS_CIDADES_.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_TODAS_CIDADES_ActionPerformed(evt);
@@ -611,7 +632,7 @@ public class Localizacao extends javax.swing.JFrame {
                                     .addComponent(btn_TODAS_CIDADES_)
                                     .addGap(18, 18, 18)
                                     .addComponent(btnCidade_))))))
-                .addContainerGap(30, Short.MAX_VALUE))
+                .addContainerGap(48, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -772,7 +793,12 @@ public class Localizacao extends javax.swing.JFrame {
                 }
             });
 
-        } else if (nomePais.getText().equals("Brasil")) {
+        } else {
+            if (!nomePais.getText().equals("Brasil")) {
+                lblNomeCombo_estados.setVisible(false);
+                combo_estados_.setVisible(false);
+                btn_TODOS_ESTADOS_.setVisible(false);
+            }
             if (!jaListouTabelaEstados) {
                 StateRepository stateRepository = retrofit.BaseURL().create(StateRepository.class);
                 Call<List<State>> callState = stateRepository.getStatesCadastrados(nomePais.getText());
@@ -798,9 +824,8 @@ public class Localizacao extends javax.swing.JFrame {
                 if (btnPais_.getText().equals("Avançar")) {
                     //pega o numero da guia atual e acrescenta + 1 para ir para a proxima aba
                     selecionar_guia(FORM_GUIAS.getSelectedIndex() + 1);
-                    combo_estados_.setVisible(true);
-                    lblNomeCombo_estados.setVisible(true);
                 }
+
             }
         }
     }//GEN-LAST:event_btnPais_ActionPerformed
@@ -828,17 +853,22 @@ public class Localizacao extends javax.swing.JFrame {
     }//GEN-LAST:event_lblVoltar_MouseClicked
 
     private void btnEstado_ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEstado_ActionPerformed
-        //se estiver cadastrando apenas o estado
-        if (entidadeUtilizada.equals("estado")) {
-            //verifica se o pais foi informado, porque o estado depende do pais no cadastro
-            if (nomePais.getText().equals("") && id_SelecionadoNaTabela_pais == null) {
-                JOptionPane.showMessageDialog(Localizacao.this, "Informe o país deste estado", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
-                nomePais.requestFocus();
 
-                //volta para a aba de pais, para o mesmo ser informado
-                selecionar_guia(this.FORM_GUIAS.getSelectedIndex() - 1);
+        //verifica se o pais foi informado, porque o estado depende do pais no cadastro
+        if (nomePais.getText().equals("") && id_SelecionadoNaTabela_pais == null) {
+            JOptionPane.showMessageDialog(Localizacao.this, "Informe o país deste estado", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
+            nomePais.requestFocus();
 
-            } else if (txtNomeEstado_.getText().equals("") && combo_estados_.getSelectedItem().equals("Selecione")) {
+            //volta para a aba de pais, para o mesmo ser informado
+            selecionar_guia(this.FORM_GUIAS.getSelectedIndex() - 1);
+
+            //se estiver cadastrando apenas o estado
+        } else if (entidadeUtilizada.equals("estado")) {
+            if (txtNomeEstado_.getText().equals("") && combo_estados_.getSelectedItem().equals("Selecione") && nomePais.getText().equals("Brasil")) {
+                JOptionPane.showMessageDialog(Localizacao.this, "Informe o estado", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
+                txtNomeEstado_.requestFocus();
+
+            } else if (txtNomeEstado_.getText().equals("")) {
                 JOptionPane.showMessageDialog(Localizacao.this, "Informe o estado", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
                 txtNomeEstado_.requestFocus();
             } else {
@@ -873,26 +903,30 @@ public class Localizacao extends javax.swing.JFrame {
                     }
                 });
             }
+
+            //Se estiver cadastrando cidade ou vizinhanca
         } else {
-            if (nomePais.getText().equals("") && id_SelecionadoNaTabela_pais == null) {
-                JOptionPane.showMessageDialog(Localizacao.this, "Informe o país deste estado", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
-                nomePais.requestFocus();
 
-                //volta para a aba de pais, para o mesmo ser informado
-                selecionar_guia(this.FORM_GUIAS.getSelectedIndex() - 1);
-
-            } else if (txtNomeEstado_.getText().equals("") && combo_estados_.getSelectedItem().equals("Selecione")) {
+            //valçidações para cadastramento de dados com o pais: Brasil
+            if (txtNomeEstado_.getText().equals("") && combo_estados_.getSelectedItem().equals("Selecione") && nomePais.getText().equals("Brasil")) {
                 JOptionPane.showMessageDialog(Localizacao.this, "Informe o estado", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
                 txtNomeEstado_.requestFocus();
 
-            } else if (nomePais.getText().equals("Brasil")) {
+            } else if (txtNomeEstado_.getText().equals("")) {
+                JOptionPane.showMessageDialog(Localizacao.this, "Informe o estado", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
+                txtNomeEstado_.requestFocus();
+            } else {
+                if (!nomePais.getText().equals("Brasil")) {
+                    lblNomeCombo_cidades.setVisible(false);
+                    combo_cidades_.setVisible(false);
+                    btn_TODAS_CIDADES_.setVisible(false);
+                }
                 if (!jaListouTabelaCidades) {
                     CityRepository cityRepository = retrofit.BaseURL().create(CityRepository.class);
                     Call<List<City>> callState = cityRepository.getCitysCadastrados(txtNomeEstado_.getText());
                     callState.enqueue(new Callback<List<City>>() {
                         @Override
                         public void onResponse(Call<List<City>> call, Response<List<City>> rspns) {
-                            Localizacao l = new Localizacao();
                             if (rspns.isSuccessful()) {
                                 List<City> citys = rspns.body();
                                 listarTabelaCidadesCadastrados(citys);
@@ -914,8 +948,6 @@ public class Localizacao extends javax.swing.JFrame {
                     if (btnPais_.getText().equals("Avançar")) {
                         //pega o numero da guia atual e acrescenta + 1 para ir para a proxima aba
                         selecionar_guia(FORM_GUIAS.getSelectedIndex() + 1);
-                        combo_estados_.setVisible(true);
-                        lblNomeCombo_estados.setVisible(true);
                     }
                 }
             }
@@ -1011,6 +1043,7 @@ public class Localizacao extends javax.swing.JFrame {
                 public void onResponse(Call<List<Estado_retrofit>> call, Response<List<Estado_retrofit>> response) {
                     if (response.isSuccessful()) {
                         List<Estado_retrofit> estados = response.body();
+                        
                         for (Estado_retrofit e : estados) {
                             String esta = e.getNome() + "-" + e.getSigla();
                             ESTADOS.add(esta);
@@ -1028,24 +1061,28 @@ public class Localizacao extends javax.swing.JFrame {
 
                 @Override
                 public void onFailure(Call<List<Estado_retrofit>> call, Throwable t) {
-                    // TODO Auto-generated method stub
+                    System.out.println("Erro ao listar COMBOBOX: " + t.getMessage());
                 }
             });
         }
     }//GEN-LAST:event_btn_TODOS_ESTADOS_ActionPerformed
 
     private void btnCidade_ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCidade_ActionPerformed
-        //se estiver cadastrando apenas o estado
-        if (entidadeUtilizada.equals("cidade")) {
-            //verifica se o pais foi informado, porque o estado depende do pais no cadastro
-            if (txtNomeEstado_.getText().equals("")) {
-                JOptionPane.showMessageDialog(Localizacao.this, "Informe o estado desta cidade", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
-                nomePais.requestFocus();
 
-                //volta para a aba de pais, para o mesmo ser informado
-                selecionar_guia(this.FORM_GUIAS.getSelectedIndex() - 1);
+        //verifica se o pais foi informado, porque o estado depende do pais no cadastro
+        if (txtNomeEstado_.getText().equals("")) {
+            JOptionPane.showMessageDialog(Localizacao.this, "Informe o estado desta cidade", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
+            nomePais.requestFocus();
 
-            } else if (txtNomeCidade_.getText().equals("") || combo_cidades_.getSelectedItem().equals("Selecione")) {
+            //volta para a aba de pais, para o mesmo ser informado
+            selecionar_guia(this.FORM_GUIAS.getSelectedIndex() - 1);
+
+            //se estiver cadastrando apenas a cidade
+        } else if (entidadeUtilizada.equals("cidade")) {
+            if (txtNomeCidade_.getText().equals("") && combo_cidades_.getSelectedItem().equals("Selecione") && nomePais.getText().equals("Brasil")) {
+                JOptionPane.showMessageDialog(Localizacao.this, "Informe a cidade", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
+                txtNomeCidade_.requestFocus();
+            } else if (txtNomeCidade_.getText().equals("")) {
                 JOptionPane.showMessageDialog(Localizacao.this, "Informe a cidade", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
                 txtNomeCidade_.requestFocus();
             } else {
@@ -1085,20 +1122,37 @@ public class Localizacao extends javax.swing.JFrame {
                     }
                 });
             }
+            //se estiver cadastrando vizinhanca
         } else {
-            //verifica se o pais foi informado, porque o estado depende do pais no cadastro
-            if (txtNomeEstado_.getText().equals("")) {
-                JOptionPane.showMessageDialog(Localizacao.this, "Informe o estado desta cidade", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
-                nomePais.requestFocus();
-
-                //volta para a aba de pais, para o mesmo ser informado
-                selecionar_guia(this.FORM_GUIAS.getSelectedIndex() - 1);
-
-            } else if (txtNomeCidade_.getText().equals("") || combo_cidades_.getSelectedItem().equals("Selecione")) {
+            if (txtNomeCidade_.getText().equals("") && combo_cidades_.getSelectedItem().equals("Selecione") && nomePais.getText().equals("Brasil")) {
+                JOptionPane.showMessageDialog(Localizacao.this, "Informe a cidade", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
+                txtNomeCidade_.requestFocus();
+            } else if (txtNomeCidade_.getText().equals("")) {
                 JOptionPane.showMessageDialog(Localizacao.this, "Informe a cidade", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
                 txtNomeCidade_.requestFocus();
             } else {
-                selecionar_guia(this.FORM_GUIAS.getSelectedIndex() + 1);
+                if (!jaListouTabelaNeighborhood) {
+                    NeighborhoodRepository neighborhoodRepository = retrofit.BaseURL().create(NeighborhoodRepository.class);
+                    Call<List<Neighborhood>> callState = neighborhoodRepository.getNeighborhoodCadastradosFK(txtNomeCidade_.getText());
+                    callState.enqueue(new Callback<List<Neighborhood>>() {
+                        @Override
+                        public void onResponse(Call<List<Neighborhood>> call, Response<List<Neighborhood>> rspns) {                            
+                            if (rspns.isSuccessful()) {
+                                List<Neighborhood> neighborhoods = rspns.body();
+                                listarTabelaNeighborhoodCadastradas(neighborhoods);
+                                jaListouTabelaCidades = true;
+                                callState.cancel();
+                                selecionar_guia(FORM_GUIAS.getSelectedIndex() + 1);
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<List<Neighborhood>> call, Throwable thrwbl) {
+                        }
+                    });
+                } else {
+                    selecionar_guia(FORM_GUIAS.getSelectedIndex() + 1);
+                }
             }
         }
     }//GEN-LAST:event_btnCidade_ActionPerformed

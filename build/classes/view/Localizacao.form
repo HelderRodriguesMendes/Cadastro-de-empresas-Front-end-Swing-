@@ -344,7 +344,7 @@
             </Component>
             <Component class="javax.swing.JButton" name="btn_TODOS_ESTADOS_">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Todos Estados"/>
+                <Property name="text" type="java.lang.String" value="+  Estados"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btn_TODOS_ESTADOS_ActionPerformed"/>
@@ -391,7 +391,7 @@
                               </Group>
                           </Group>
                       </Group>
-                      <EmptySpace pref="30" max="32767" attributes="0"/>
+                      <EmptySpace pref="48" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -498,7 +498,7 @@
             </Container>
             <Component class="javax.swing.JButton" name="btn_TODAS_CIDADES_">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Todas Cidades"/>
+                <Property name="text" type="java.lang.String" value="+  Cidades"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btn_TODAS_CIDADES_ActionPerformed"/>

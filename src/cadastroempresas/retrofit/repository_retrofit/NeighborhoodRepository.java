@@ -23,4 +23,7 @@ public interface NeighborhoodRepository {
     
     @POST("/neighborhood/cadastrar")
     Call<Boolean> salvar(@Body Neighborhood neighborhood);
+    
+    @GET("/neighborhood/findAllNeighborhoodNameCity/name?")
+    Call<List<Neighborhood>> getNeighborhoodCadastradosFK(@Query("name") String name);
 }
