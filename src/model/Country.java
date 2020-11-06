@@ -46,7 +46,5 @@ public class Country implements Serializable{	//PAIS
      */
     public void setName(String name) {
         this.name = name;
-    }
-        
-        
+    }            
 }

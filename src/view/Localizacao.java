@@ -20,6 +20,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
@@ -211,11 +212,14 @@ public class Localizacao extends javax.swing.JFrame {
     }
 
     public void listarTabelaEstadosCadastrados(List<State> statesCadastrados) {
-
+        
+        //ORDENANDO LISTA
+        Collections.sort (statesCadastrados, (State s1, State s2) -> s1.getName().toUpperCase().compareTo (s2.getName().toUpperCase()));
+        
         DefaultTableModel dtma = (DefaultTableModel) TABELA_Estados.getModel();
         dtma.setNumRows(0);
         TABELA_Estados.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        TABELA_Estados.getColumnModel().getColumn(1).setPreferredWidth(140);
+        TABELA_Estados.getColumnModel().getColumn(1).setPreferredWidth(180);
 
         TABELA_Estados.getColumnModel().getColumn(0).setMinWidth(0); // OCULTA A COLUNA (ID) DA TABELA PARA NÃO APARECER PARA O USUARIO
         TABELA_Estados.getColumnModel().getColumn(0).setMaxWidth(0); // OCULTA A COLUNA (ID) DA TABELA PARA NÃO APARECER PARA O USUARIO
@@ -230,10 +234,13 @@ public class Localizacao extends javax.swing.JFrame {
     }
 
     public void listarTabelaCidadesCadastrados(List<City> citysCadastradas) {
+        //ORDENANDO LISTA
+        Collections.sort (citysCadastradas, (City c1, City c2) -> c1.getName().toUpperCase().compareTo (c2.getName().toUpperCase()));
+        
         DefaultTableModel dtma = (DefaultTableModel) TABELA_cidade.getModel();
         dtma.setNumRows(0);
         TABELA_cidade.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        TABELA_cidade.getColumnModel().getColumn(1).setPreferredWidth(140);
+        TABELA_cidade.getColumnModel().getColumn(1).setPreferredWidth(180);
 
         TABELA_cidade.getColumnModel().getColumn(0).setMinWidth(0); // OCULTA A COLUNA (ID) DA TABELA PARA NÃO APARECER PARA O USUARIO
         TABELA_cidade.getColumnModel().getColumn(0).setMaxWidth(0); // OCULTA A COLUNA (ID) DA TABELA PARA NÃO APARECER PARA O USUARIO
@@ -299,12 +306,10 @@ public class Localizacao extends javax.swing.JFrame {
         txtNomeCidade_ = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
         btnCidade_ = new javax.swing.JButton();
-        jTextField2 = new javax.swing.JTextField();
-        jLabel7 = new javax.swing.JLabel();
-        jLabel8 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
         TABELA_cidade = new javax.swing.JTable();
         btn_TODAS_CIDADES_ = new javax.swing.JButton();
+        jLabel10 = new javax.swing.JLabel();
         jPanel5 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
         txtNomeVizinhanca_ = new javax.swing.JTextField();
@@ -315,12 +320,6 @@ public class Localizacao extends javax.swing.JFrame {
         setType(java.awt.Window.Type.UTILITY);
 
         jLabel1.setText("Nome:");
-
-        nomePais.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                nomePaisActionPerformed(evt);
-            }
-        });
 
         btnPais_.setText("jButton1");
         btnPais_.addActionListener(new java.awt.event.ActionListener() {
@@ -408,19 +407,13 @@ public class Localizacao extends javax.swing.JFrame {
                             .addComponent(jLabel11)
                             .addComponent(txtPesquisarPais, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 160, Short.MAX_VALUE)
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 174, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
         FORM_GUIAS.addTab("País", jPanel1);
 
         jLabel2.setText("Nome:");
-
-        txtNomeEstado_.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtNomeEstado_ActionPerformed(evt);
-            }
-        });
 
         btnEstado_.setText("jButton1");
         btnEstado_.addActionListener(new java.awt.event.ActionListener() {
@@ -435,15 +428,6 @@ public class Localizacao extends javax.swing.JFrame {
         combo_estados_.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 combo_estados_ItemStateChanged(evt);
-            }
-        });
-        combo_estados_.addAncestorListener(new javax.swing.event.AncestorListener() {
-            public void ancestorMoved(javax.swing.event.AncestorEvent evt) {
-            }
-            public void ancestorAdded(javax.swing.event.AncestorEvent evt) {
-                combo_estados_AncestorAdded(evt);
-            }
-            public void ancestorRemoved(javax.swing.event.AncestorEvent evt) {
             }
         });
 
@@ -466,21 +450,9 @@ public class Localizacao extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
-        TABELA_Estados.addAncestorListener(new javax.swing.event.AncestorListener() {
-            public void ancestorMoved(javax.swing.event.AncestorEvent evt) {
-            }
-            public void ancestorAdded(javax.swing.event.AncestorEvent evt) {
-                TABELA_EstadosAncestorAdded(evt);
-            }
-            public void ancestorRemoved(javax.swing.event.AncestorEvent evt) {
-            }
-        });
         TABELA_Estados.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 TABELA_EstadosMouseClicked(evt);
-            }
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                TABELA_EstadosMouseEntered(evt);
             }
         });
         jScrollPane1.setViewportView(TABELA_Estados);
@@ -509,22 +481,23 @@ public class Localizacao extends javax.swing.JFrame {
                         .addComponent(jLabel2)
                         .addGap(12, 12, 12)
                         .addComponent(txtNomeEstado_, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addGroup(jPanel2Layout.createSequentialGroup()
+                            .addContainerGap()
+                            .addComponent(btn_TODOS_ESTADOS_)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(btnEstado_))
+                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
+                            .addGap(12, 12, 12)
+                            .addComponent(lblNomeCombo_estados)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(combo_estados_, javax.swing.GroupLayout.PREFERRED_SIZE, 179, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(12, 12, 12)
-                        .addComponent(lblNomeCombo_estados)
-                        .addGap(0, 0, 0)
-                        .addComponent(combo_estados_, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(btn_TODOS_ESTADOS_)
-                        .addGap(22, 22, 22)
-                        .addComponent(btnEstado_))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))))
-                .addContainerGap(68, Short.MAX_VALUE))
+                        .addGap(49, 49, 49)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel9)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 201, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap(31, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -545,10 +518,10 @@ public class Localizacao extends javax.swing.JFrame {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnEstado_)
                     .addComponent(btn_TODOS_ESTADOS_))
-                .addGap(42, 42, 42)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 30, Short.MAX_VALUE)
                 .addComponent(jLabel9)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 148, Short.MAX_VALUE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 174, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         FORM_GUIAS.addTab("Estado", jPanel2);
@@ -562,12 +535,6 @@ public class Localizacao extends javax.swing.JFrame {
             }
         });
 
-        txtNomeCidade_.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtNomeCidade_ActionPerformed(evt);
-            }
-        });
-
         jLabel5.setText("Nome:");
 
         btnCidade_.setText("jButton1");
@@ -576,10 +543,6 @@ public class Localizacao extends javax.swing.JFrame {
                 btnCidade_ActionPerformed(evt);
             }
         });
-
-        jLabel7.setText("Nome:");
-
-        jLabel8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagens/pesquisar.png"))); // NOI18N
 
         TABELA_cidade.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -600,14 +563,6 @@ public class Localizacao extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
-        TABELA_cidade.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                TABELA_cidadeMouseClicked(evt);
-            }
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                TABELA_cidadeMouseEntered(evt);
-            }
-        });
         jScrollPane2.setViewportView(TABELA_cidade);
         if (TABELA_cidade.getColumnModel().getColumnCount() > 0) {
             TABELA_cidade.getColumnModel().getColumn(0).setResizable(false);
@@ -621,34 +576,35 @@ public class Localizacao extends javax.swing.JFrame {
             }
         });
 
+        jLabel10.setText("Cidades cadastradas");
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel3Layout.createSequentialGroup()
+                        .addComponent(jLabel5)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtNomeCidade_, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addComponent(jLabel10)
+                                .addGap(82, 82, 82)))
                         .addGroup(jPanel3Layout.createSequentialGroup()
-                            .addComponent(btn_TODAS_CIDADES_)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnCidade_))
-                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel3Layout.createSequentialGroup()
-                            .addComponent(jLabel5)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(txtNomeCidade_, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel3Layout.createSequentialGroup()
                             .addComponent(lblNomeCombo_cidades)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(combo_cidades_, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addComponent(jLabel7)
-                        .addGap(2, 2, 2)
-                        .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(1, 1, 1)
-                        .addComponent(jLabel8)))
-                .addContainerGap(81, Short.MAX_VALUE))
+                            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(combo_cidades_, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGroup(jPanel3Layout.createSequentialGroup()
+                                    .addComponent(btn_TODAS_CIDADES_)
+                                    .addGap(18, 18, 18)
+                                    .addComponent(btnCidade_))))))
+                .addContainerGap(30, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -665,15 +621,10 @@ public class Localizacao extends javax.swing.JFrame {
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnCidade_)
                     .addComponent(btn_TODAS_CIDADES_))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel7))
-                    .addComponent(jLabel8))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 19, Short.MAX_VALUE)
+                .addComponent(jLabel10)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 148, Short.MAX_VALUE)
-                .addGap(17, 17, 17))
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         FORM_GUIAS.addTab("Cidade", jPanel3);
@@ -705,7 +656,7 @@ public class Localizacao extends javax.swing.JFrame {
                     .addComponent(txtNomeVizinhanca_, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnVizinhanca_)
-                .addContainerGap(244, Short.MAX_VALUE))
+                .addContainerGap(258, Short.MAX_VALUE))
         );
 
         FORM_GUIAS.addTab("Vizinhança", jPanel5);
@@ -735,18 +686,6 @@ public class Localizacao extends javax.swing.JFrame {
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
-
-    private void nomePaisActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nomePaisActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_nomePaisActionPerformed
-
-    private void txtNomeEstado_ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNomeEstado_ActionPerformed
-
-    }//GEN-LAST:event_txtNomeEstado_ActionPerformed
-
-    private void txtNomeCidade_ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNomeCidade_ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtNomeCidade_ActionPerformed
 
     private void btnPais_ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPais_ActionPerformed
 
@@ -795,7 +734,7 @@ public class Localizacao extends javax.swing.JFrame {
                             listarTabelaEstadosCadastrados(state);
                             jaListouTabelaEstados = true;
                             callState.cancel();
-                            selecionar_guia(FORM_GUIAS.getSelectedIndex() + 1);                         
+                            selecionar_guia(FORM_GUIAS.getSelectedIndex() + 1);
                         }
                     }
 
@@ -814,10 +753,6 @@ public class Localizacao extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_btnPais_ActionPerformed
-
-    private void combo_estados_AncestorAdded(javax.swing.event.AncestorEvent evt) {//GEN-FIRST:event_combo_estados_AncestorAdded
-
-    }//GEN-LAST:event_combo_estados_AncestorAdded
 
     private void lblVoltar_MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblVoltar_MouseClicked
         //verifica se não é primeira aba, que é representada por 0, para nao dar erro na subtracao
@@ -898,7 +833,7 @@ public class Localizacao extends javax.swing.JFrame {
             } else if (txtNomeEstado_.getText().equals("") && combo_estados_.getSelectedItem().equals("Selecione")) {
                 JOptionPane.showMessageDialog(Localizacao.this, "Informe o estado", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
                 txtNomeEstado_.requestFocus();
-                
+
             } else if (nomePais.getText().equals("Brasil")) {
                 if (!jaListouTabelaCidades) {
                     CityRepository cityRepository = retrofit.BaseURL().create(CityRepository.class);
@@ -994,10 +929,6 @@ public class Localizacao extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_TABELA_PaisMouseClicked
 
-    private void TABELA_EstadosMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TABELA_EstadosMouseEntered
-
-    }//GEN-LAST:event_TABELA_EstadosMouseEntered
-
     private void TABELA_EstadosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TABELA_EstadosMouseClicked
         //se estiver cadastrando um estado e clica em um estado ja cadastrado que esta na tabela, o nome desse pais nao ira para o campu de cadastramento
         if (!(status_Form.equals("cadastrar") && entidadeUtilizada.equals("estado"))) {
@@ -1018,39 +949,37 @@ public class Localizacao extends javax.swing.JFrame {
         } else if (nomePais.getText().equals("Brasil")) {
             lblNomeCombo_estados.setVisible(true);
             combo_estados_.setVisible(true);
-            if (!jaBuscoEstados) {
-                EstadoRepository_retrofit estado_retrofit = retrofit.BaseURL_estado().create(EstadoRepository_retrofit.class);
 
-                List<String> ESTADOS = new ArrayList<>();
-                Call<List<Estado_retrofit>> call = estado_retrofit.getEstados();
+            EstadoRepository_retrofit estado_retrofit = retrofit.BaseURL_estado().create(EstadoRepository_retrofit.class);
 
-                call.enqueue(new Callback<List<Estado_retrofit>>() {
-                    @Override
-                    public void onResponse(Call<List<Estado_retrofit>> call, Response<List<Estado_retrofit>> response) {
-                        if (response.isSuccessful()) {
-                            List<Estado_retrofit> estados = response.body();
-                            for (Estado_retrofit e : estados) {
-                                String esta = e.getNome() + "-" + e.getSigla();
-                                ESTADOS.add(esta);
-                            }
-                            //COLOCA A LISTA EM ORDEM ALFABETICA
-                            Collections.sort(ESTADOS);
+            List<String> ESTADOS = new ArrayList<>();
+            Call<List<Estado_retrofit>> call = estado_retrofit.getEstados();
 
-                            for (String e : ESTADOS) {
-                                combo_estados_.removeAll();
-                                combo_estados_.addItem(e);
-                            }
-                            jaBuscoEstados = true;
-                            call.cancel();
+            call.enqueue(new Callback<List<Estado_retrofit>>() {
+                @Override
+                public void onResponse(Call<List<Estado_retrofit>> call, Response<List<Estado_retrofit>> response) {
+                    if (response.isSuccessful()) {
+                        List<Estado_retrofit> estados = response.body();
+                        for (Estado_retrofit e : estados) {
+                            String esta = e.getNome() + "-" + e.getSigla();
+                            ESTADOS.add(esta);
                         }
-                    }
+                        //COLOCA A LISTA EM ORDEM ALFABETICA
+                        Collections.sort(ESTADOS);
 
-                    @Override
-                    public void onFailure(Call<List<Estado_retrofit>> call, Throwable t) {
-                        // TODO Auto-generated method stub
+                        for (String e : ESTADOS) {
+                            combo_estados_.removeAll();
+                            combo_estados_.addItem(e);
+                        }
+                        call.cancel();
                     }
-                });
-            }
+                }
+
+                @Override
+                public void onFailure(Call<List<Estado_retrofit>> call, Throwable t) {
+                    // TODO Auto-generated method stub
+                }
+            });
         }
     }//GEN-LAST:event_btn_TODOS_ESTADOS_ActionPerformed
 
@@ -1108,18 +1037,6 @@ public class Localizacao extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnCidade_ActionPerformed
 
-    private void TABELA_cidadeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TABELA_cidadeMouseClicked
-        // TODO add your handling code here:
-    }//GEN-LAST:event_TABELA_cidadeMouseClicked
-
-    private void TABELA_cidadeMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TABELA_cidadeMouseEntered
-        // TODO add your handling code here:
-    }//GEN-LAST:event_TABELA_cidadeMouseEntered
-
-    private void TABELA_EstadosAncestorAdded(javax.swing.event.AncestorEvent evt) {//GEN-FIRST:event_TABELA_EstadosAncestorAdded
-        // TODO add your handling code here:
-    }//GEN-LAST:event_TABELA_EstadosAncestorAdded
-
     private void btn_TODAS_CIDADES_ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_TODAS_CIDADES_ActionPerformed
         if (txtNomeEstado_.getText().equals("")) {
             JOptionPane.showMessageDialog(Localizacao.this, "Informe o estado desta cidade", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
@@ -1132,41 +1049,40 @@ public class Localizacao extends javax.swing.JFrame {
             lblNomeCombo_cidades.setVisible(true);
             combo_cidades_.setVisible(true);
             txtNomeCidade_.setEnabled(false);
-            if (!jaBuscoCidades) {
-                MunicipiosRepository municipiosRepository = retrofit.BaseURL_estado().create(MunicipiosRepository.class);
-                
-                String UF = stateController.separaSigla_State(txtNomeEstado_.getText());
 
-                List<String> CIDADES = new ArrayList<>();
-                Call<List<Cidade_retrofit>> call = municipiosRepository.getCidades(UF);
+            MunicipiosRepository municipiosRepository = retrofit.BaseURL_estado().create(MunicipiosRepository.class);
 
-                call.enqueue(new Callback<List<Cidade_retrofit>>() {
-                    @Override
-                    public void onResponse(Call<List<Cidade_retrofit>> call, Response<List<Cidade_retrofit>> response) {
-                        if (response.isSuccessful()) {
-                            List<Cidade_retrofit> cidades = response.body();
-                            for (Cidade_retrofit c : cidades) {
-                                String cidade = c.getNome();
-                                CIDADES.add(cidade);
-                            }
-                            //COLOCA A LISTA EM ORDEM ALFABETICA
-                            Collections.sort(CIDADES);
+            String UF = stateController.separaSigla_State(txtNomeEstado_.getText());
 
-                            for (String c : CIDADES) {
-                                combo_cidades_.removeAll();
-                                combo_cidades_.addItem(c);
-                            }
-                            jaBuscoCidades = true;
-                            call.cancel();
+            List<String> CIDADES = new ArrayList<>();
+            Call<List<Cidade_retrofit>> call = municipiosRepository.getCidades(UF);
+
+            call.enqueue(new Callback<List<Cidade_retrofit>>() {
+                @Override
+                public void onResponse(Call<List<Cidade_retrofit>> call, Response<List<Cidade_retrofit>> response) {
+                    if (response.isSuccessful()) {
+                        List<Cidade_retrofit> cidades = response.body();
+                        for (Cidade_retrofit c : cidades) {
+                            String cidade = c.getNome();
+                            CIDADES.add(cidade);
                         }
-                    }
+                        //COLOCA A LISTA EM ORDEM ALFABETICA
+                        Collections.sort(CIDADES);
 
-                    @Override
-                    public void onFailure(Call<List<Cidade_retrofit>> call, Throwable t) {
-                        // TODO Auto-generated method stub
+                        for (String c : CIDADES) {
+                            combo_cidades_.removeAll();
+                            combo_cidades_.addItem(c);
+                        }
+                        jaBuscoCidades = true;
+                        call.cancel();
                     }
-                });
-            }
+                }
+
+                @Override
+                public void onFailure(Call<List<Cidade_retrofit>> call, Throwable t) {
+                    // TODO Auto-generated method stub
+                }
+            });
         }
     }//GEN-LAST:event_btn_TODAS_CIDADES_ActionPerformed
 
@@ -1189,13 +1105,12 @@ public class Localizacao extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> combo_cidades_;
     private javax.swing.JComboBox combo_estados_;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
@@ -1204,7 +1119,6 @@ public class Localizacao extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane4;
-    private javax.swing.JTextField jTextField2;
     private javax.swing.JLabel lblNomeCombo_cidades;
     private javax.swing.JLabel lblNomeCombo_estados;
     private javax.swing.JLabel lblVoltar_;
