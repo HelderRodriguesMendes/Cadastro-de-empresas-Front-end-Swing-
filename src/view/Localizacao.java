@@ -11,6 +11,7 @@ import cadastroempresas.retrofit.repository_retrofit.CityRepository;
 import cadastroempresas.retrofit.repository_retrofit.CountryRepository;
 import cadastroempresas.retrofit.repository_retrofit.EstadoRepository_retrofit;
 import cadastroempresas.retrofit.repository_retrofit.MunicipiosRepository;
+import cadastroempresas.retrofit.repository_retrofit.NeighborhoodRepository;
 import cadastroempresas.retrofit.repository_retrofit.StateRepository;
 import cadastroempresas.retrofit.service_retrofit.Retrofit_URL;
 import controller.StateController;
@@ -20,7 +21,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
@@ -28,6 +28,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import model.City;
 import model.Country;
+import model.Neighborhood;
 import model.State;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -43,7 +44,7 @@ public class Localizacao extends javax.swing.JFrame {
     Retrofit_URL retrofit = new Retrofit_URL();
     StateController stateController = new StateController();
     boolean jaBuscoEstados = false, jaBuscoCidades = false, jaListouTabelaEstados = false, jaListouTabelaCidades = false;
-    Long id_SelecionadoNaTabela_pais = null, id_SelecionadoNaTabela_estado = null, id_SelecionadoNaTabela_cidade = null;
+    Long id_SelecionadoNaTabela_pais = null, id_SelecionadoNaTabela_estado = null, id_SelecionadoNaTabela_cidade = null, id_SelecionadoNaTabela_vizinhanca = null;
 
     public Localizacao() {
         initComponents();
@@ -212,10 +213,10 @@ public class Localizacao extends javax.swing.JFrame {
     }
 
     public void listarTabelaEstadosCadastrados(List<State> statesCadastrados) {
-        
+
         //ORDENANDO LISTA
-        Collections.sort (statesCadastrados, (State s1, State s2) -> s1.getName().toUpperCase().compareTo (s2.getName().toUpperCase()));
-        
+        Collections.sort(statesCadastrados, (State s1, State s2) -> s1.getName().toUpperCase().compareTo(s2.getName().toUpperCase()));
+
         DefaultTableModel dtma = (DefaultTableModel) TABELA_Estados.getModel();
         dtma.setNumRows(0);
         TABELA_Estados.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
@@ -235,8 +236,8 @@ public class Localizacao extends javax.swing.JFrame {
 
     public void listarTabelaCidadesCadastrados(List<City> citysCadastradas) {
         //ORDENANDO LISTA
-        Collections.sort (citysCadastradas, (City c1, City c2) -> c1.getName().toUpperCase().compareTo (c2.getName().toUpperCase()));
-        
+        Collections.sort(citysCadastradas, (City c1, City c2) -> c1.getName().toUpperCase().compareTo(c2.getName().toUpperCase()));
+
         DefaultTableModel dtma = (DefaultTableModel) TABELA_cidade.getModel();
         dtma.setNumRows(0);
         TABELA_cidade.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
@@ -314,6 +315,9 @@ public class Localizacao extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         txtNomeVizinhanca_ = new javax.swing.JTextField();
         btnVizinhanca_ = new javax.swing.JButton();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        TABELA_vizinhanca = new javax.swing.JTable();
+        jLabel13 = new javax.swing.JLabel();
         lblVoltar_ = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
@@ -563,6 +567,11 @@ public class Localizacao extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
+        TABELA_cidade.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                TABELA_cidadeMouseClicked(evt);
+            }
+        });
         jScrollPane2.setViewportView(TABELA_cidade);
         if (TABELA_cidade.getColumnModel().getColumnCount() > 0) {
             TABELA_cidade.getColumnModel().getColumn(0).setResizable(false);
@@ -592,9 +601,7 @@ public class Localizacao extends javax.swing.JFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(jPanel3Layout.createSequentialGroup()
-                                .addComponent(jLabel10)
-                                .addGap(82, 82, 82)))
+                            .addComponent(jLabel10))
                         .addGroup(jPanel3Layout.createSequentialGroup()
                             .addComponent(lblNomeCombo_cidades)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -632,20 +639,60 @@ public class Localizacao extends javax.swing.JFrame {
         jLabel3.setText("Nome:");
 
         btnVizinhanca_.setText("jButton1");
+        btnVizinhanca_.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnVizinhanca_ActionPerformed(evt);
+            }
+        });
+
+        TABELA_vizinhanca.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null}
+            },
+            new String [] {
+                "ID", "NOME"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        TABELA_vizinhanca.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                TABELA_vizinhancaMouseClicked(evt);
+            }
+        });
+        jScrollPane3.setViewportView(TABELA_vizinhanca);
+        if (TABELA_vizinhanca.getColumnModel().getColumnCount() > 0) {
+            TABELA_vizinhanca.getColumnModel().getColumn(0).setResizable(false);
+            TABELA_vizinhanca.getColumnModel().getColumn(1).setResizable(false);
+        }
+
+        jLabel13.setText("Cidades cadastradas");
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
         jPanel5Layout.setHorizontalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(btnVizinhanca_)
-                    .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addComponent(jLabel3)
-                        .addGap(3, 3, 3)
-                        .addComponent(txtNomeVizinhanca_, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(72, 72, 72))
+                .addContainerGap(30, Short.MAX_VALUE)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel13)
+                    .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addComponent(btnVizinhanca_)
+                        .addGroup(jPanel5Layout.createSequentialGroup()
+                            .addComponent(jLabel3)
+                            .addGap(3, 3, 3)
+                            .addComponent(txtNomeVizinhanca_, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addGap(63, 63, 63))
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -656,7 +703,11 @@ public class Localizacao extends javax.swing.JFrame {
                     .addComponent(txtNomeVizinhanca_, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnVizinhanca_)
-                .addContainerGap(258, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 37, Short.MAX_VALUE)
+                .addComponent(jLabel13)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
 
         FORM_GUIAS.addTab("Vizinhança", jPanel5);
@@ -930,7 +981,7 @@ public class Localizacao extends javax.swing.JFrame {
     }//GEN-LAST:event_TABELA_PaisMouseClicked
 
     private void TABELA_EstadosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TABELA_EstadosMouseClicked
-        //se estiver cadastrando um estado e clica em um estado ja cadastrado que esta na tabela, o nome desse pais nao ira para o campu de cadastramento
+        //se estiver cadastrando um estado e clica em um estado ja cadastrado que esta na tabela, o nome desse estado nao ira para o campu de cadastramento
         if (!(status_Form.equals("cadastrar") && entidadeUtilizada.equals("estado"))) {
             String estado = TABELA_Estados.getValueAt(TABELA_Estados.getSelectedRow(), 1).toString();
             txtNomeEstado_.setText(estado);
@@ -1034,6 +1085,21 @@ public class Localizacao extends javax.swing.JFrame {
                     }
                 });
             }
+        } else {
+            //verifica se o pais foi informado, porque o estado depende do pais no cadastro
+            if (txtNomeEstado_.getText().equals("")) {
+                JOptionPane.showMessageDialog(Localizacao.this, "Informe o estado desta cidade", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
+                nomePais.requestFocus();
+
+                //volta para a aba de pais, para o mesmo ser informado
+                selecionar_guia(this.FORM_GUIAS.getSelectedIndex() - 1);
+
+            } else if (txtNomeCidade_.getText().equals("") || combo_cidades_.getSelectedItem().equals("Selecione")) {
+                JOptionPane.showMessageDialog(Localizacao.this, "Informe a cidade", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
+                txtNomeCidade_.requestFocus();
+            } else {
+                selecionar_guia(this.FORM_GUIAS.getSelectedIndex() + 1);
+            }
         }
     }//GEN-LAST:event_btnCidade_ActionPerformed
 
@@ -1091,11 +1157,89 @@ public class Localizacao extends javax.swing.JFrame {
         txtNomeCidade_.setText(combo_cidades_.getSelectedItem().toString());
     }//GEN-LAST:event_combo_cidades_ItemStateChanged
 
+    private void btnVizinhanca_ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVizinhanca_ActionPerformed
+        if (entidadeUtilizada.equals("vizinhanca")) {
+            //verifica se o pais foi informado, porque o estado depende do pais no cadastro
+            if (txtNomeCidade_.getText().equals("")) {
+                JOptionPane.showMessageDialog(Localizacao.this, "Informe a cidade desta vizinhança", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
+                nomePais.requestFocus();
+
+                //volta para a aba de pais, para o mesmo ser informado
+                selecionar_guia(this.FORM_GUIAS.getSelectedIndex() - 1);
+
+            } else if (txtNomeVizinhanca_.getText().equals("")) {
+                JOptionPane.showMessageDialog(Localizacao.this, "Informe a vizinhança", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
+                txtNomeCidade_.requestFocus();
+            } else {
+                Country country = new Country();
+                country.setId(id_SelecionadoNaTabela_pais);
+                country.setName(nomePais.getText());
+
+                State state = new State();
+                state.setId(id_SelecionadoNaTabela_estado);
+                state.setName(txtNomeEstado_.getText());
+                state.setCountry(country);
+
+                City city = new City();
+                city.setId(id_SelecionadoNaTabela_cidade);
+                city.setName(txtNomeCidade_.getText());
+                city.setState(state);
+
+                Neighborhood neighborhood = new Neighborhood();
+                neighborhood.setId(id_SelecionadoNaTabela_vizinhanca);
+                neighborhood.setName(txtNomeVizinhanca_.getText());
+                neighborhood.setAtivo(true);
+                neighborhood.setCity(city);
+
+                //salvar Neighborhood
+                NeighborhoodRepository BaseURL = retrofit.BaseURL().create(NeighborhoodRepository.class);
+                Call<Boolean> callState = BaseURL.salvar(neighborhood);
+                callState.enqueue(new Callback<Boolean>() {
+                    @Override
+                    public void onResponse(Call<Boolean> call, Response<Boolean> rspns) {
+                        if (rspns.isSuccessful()) {
+                            Boolean ok = rspns.body();
+                            if (ok) {
+                                JOptionPane.showMessageDialog(Localizacao.this, "Dados cadastrados com sucesso");
+                                Home h = new Home();
+                                h.habilitarForm();
+                                Localizacao.this.dispose();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Boolean> call, Throwable thrwbl) {
+                    }
+                });
+            }
+        }
+    }//GEN-LAST:event_btnVizinhanca_ActionPerformed
+
+    private void TABELA_cidadeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TABELA_cidadeMouseClicked
+        //se estiver cadastrando uma cidade e clica em um cidade ja cadastrada que esta na tabela, o nome dessa cidade nao ira para o campu de cadastramento
+        if (!(status_Form.equals("cadastrar") && entidadeUtilizada.equals("cidade"))) {
+            String cidade = TABELA_cidade.getValueAt(TABELA_cidade.getSelectedRow(), 1).toString();
+            txtNomeCidade_.setText(cidade);
+            id_SelecionadoNaTabela_cidade = Long.parseLong(TABELA_cidade.getValueAt(TABELA_cidade.getSelectedRow(), 0).toString());
+        }
+    }//GEN-LAST:event_TABELA_cidadeMouseClicked
+
+    private void TABELA_vizinhancaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TABELA_vizinhancaMouseClicked
+        //se estiver cadastrando uma vizinhanca e clica em um vizinhanca ja cadastrada que esta na tabela, o nome dessa vizinhanca nao ira para o campu de cadastramento
+        if (!(status_Form.equals("cadastrar") && entidadeUtilizada.equals("vizinhanca"))) {
+            String cidade = TABELA_vizinhanca.getValueAt(TABELA_vizinhanca.getSelectedRow(), 1).toString();
+            txtNomeVizinhanca_.setText(cidade);
+            id_SelecionadoNaTabela_vizinhanca = Long.parseLong(TABELA_vizinhanca.getValueAt(TABELA_vizinhanca.getSelectedRow(), 0).toString());
+        }
+    }//GEN-LAST:event_TABELA_vizinhancaMouseClicked
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTabbedPane FORM_GUIAS;
     private javax.swing.JTable TABELA_Estados;
     private javax.swing.JTable TABELA_Pais;
     private javax.swing.JTable TABELA_cidade;
+    private javax.swing.JTable TABELA_vizinhanca;
     private javax.swing.JButton btnCidade_;
     private javax.swing.JButton btnEstado_;
     private javax.swing.JButton btnPais_;
@@ -1108,6 +1252,7 @@ public class Localizacao extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel5;
@@ -1118,6 +1263,7 @@ public class Localizacao extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel5;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JLabel lblNomeCombo_cidades;
     private javax.swing.JLabel lblNomeCombo_estados;
