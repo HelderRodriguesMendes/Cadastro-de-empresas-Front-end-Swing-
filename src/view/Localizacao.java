@@ -346,6 +346,12 @@ public class Localizacao extends javax.swing.JFrame {
 
         jLabel1.setText("Nome:");
 
+        nomePais.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                nomePaisKeyPressed(evt);
+            }
+        });
+
         btnPais_.setText("jButton1");
         btnPais_.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -798,35 +804,28 @@ public class Localizacao extends javax.swing.JFrame {
                 lblNomeCombo_estados.setVisible(false);
                 combo_estados_.setVisible(false);
                 btn_TODOS_ESTADOS_.setVisible(false);
-            }
-            if (!jaListouTabelaEstados) {
-                StateRepository stateRepository = retrofit.BaseURL().create(StateRepository.class);
-                Call<List<State>> callState = stateRepository.getStatesCadastrados(nomePais.getText());
-                callState.enqueue(new Callback<List<State>>() {
-                    @Override
-                    public void onResponse(Call<List<State>> call, Response<List<State>> rspns) {
-                        Localizacao l = new Localizacao();
-                        if (rspns.isSuccessful()) {
-                            List<State> state = rspns.body();
-                            listarTabelaEstadosCadastrados(state);
-                            jaListouTabelaEstados = true;
-                            callState.cancel();
-                            selecionar_guia(FORM_GUIAS.getSelectedIndex() + 1);
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<List<State>> call, Throwable thrwbl) {
-                    }
-                });
             } else {
-                //se no botao da aba PAIS estiver (Avançar), ir para proxima aba
-                if (btnPais_.getText().equals("Avançar")) {
-                    //pega o numero da guia atual e acrescenta + 1 para ir para a proxima aba
-                    selecionar_guia(FORM_GUIAS.getSelectedIndex() + 1);
+                btn_TODOS_ESTADOS_.setVisible(true);
+            }
+            StateRepository stateRepository = retrofit.BaseURL().create(StateRepository.class);
+            Call<List<State>> callState = stateRepository.getStatesCadastrados(nomePais.getText());
+            callState.enqueue(new Callback<List<State>>() {
+                @Override
+                public void onResponse(Call<List<State>> call, Response<List<State>> rspns) {
+                    Localizacao l = new Localizacao();
+                    if (rspns.isSuccessful()) {
+                        List<State> state = rspns.body();
+                        listarTabelaEstadosCadastrados(state);
+                        jaListouTabelaEstados = true;
+                        callState.cancel();
+                        selecionar_guia(FORM_GUIAS.getSelectedIndex() + 1);
+                    }
                 }
 
-            }
+                @Override
+                public void onFailure(Call<List<State>> call, Throwable thrwbl) {
+                }
+            });
         }
     }//GEN-LAST:event_btnPais_ActionPerformed
 
@@ -1009,6 +1008,9 @@ public class Localizacao extends javax.swing.JFrame {
         if (!(status_Form.equals("cadastrar") && entidadeUtilizada.equals("pais"))) {
             nomePais.setText(TABELA_Pais.getValueAt(TABELA_Pais.getSelectedRow(), 1).toString());
             id_SelecionadoNaTabela_pais = Long.parseLong(TABELA_Pais.getValueAt(TABELA_Pais.getSelectedRow(), 0).toString());
+            txtNomeEstado_.setText("");
+            txtNomeCidade_.setText("");
+            txtNomeVizinhanca_.setText("");
         }
     }//GEN-LAST:event_TABELA_PaisMouseClicked
 
@@ -1043,7 +1045,7 @@ public class Localizacao extends javax.swing.JFrame {
                 public void onResponse(Call<List<Estado_retrofit>> call, Response<List<Estado_retrofit>> response) {
                     if (response.isSuccessful()) {
                         List<Estado_retrofit> estados = response.body();
-                        
+
                         for (Estado_retrofit e : estados) {
                             String esta = e.getNome() + "-" + e.getSigla();
                             ESTADOS.add(esta);
@@ -1136,7 +1138,7 @@ public class Localizacao extends javax.swing.JFrame {
                     Call<List<Neighborhood>> callState = neighborhoodRepository.getNeighborhoodCadastradosFK(txtNomeCidade_.getText());
                     callState.enqueue(new Callback<List<Neighborhood>>() {
                         @Override
-                        public void onResponse(Call<List<Neighborhood>> call, Response<List<Neighborhood>> rspns) {                            
+                        public void onResponse(Call<List<Neighborhood>> call, Response<List<Neighborhood>> rspns) {
                             if (rspns.isSuccessful()) {
                                 List<Neighborhood> neighborhoods = rspns.body();
                                 listarTabelaNeighborhoodCadastradas(neighborhoods);
@@ -1287,6 +1289,12 @@ public class Localizacao extends javax.swing.JFrame {
             id_SelecionadoNaTabela_vizinhanca = Long.parseLong(TABELA_vizinhanca.getValueAt(TABELA_vizinhanca.getSelectedRow(), 0).toString());
         }
     }//GEN-LAST:event_TABELA_vizinhancaMouseClicked
+
+    private void nomePaisKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_nomePaisKeyPressed
+        txtNomeEstado_.setText("");
+        txtNomeCidade_.setText("");
+        txtNomeVizinhanca_.setText("");
+    }//GEN-LAST:event_nomePaisKeyPressed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTabbedPane FORM_GUIAS;
