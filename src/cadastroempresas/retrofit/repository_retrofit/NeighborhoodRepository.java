@@ -6,11 +6,14 @@
 package cadastroempresas.retrofit.repository_retrofit;
 
 import java.util.List;
+import model.City;
 import model.Neighborhood;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 /**
@@ -26,4 +29,7 @@ public interface NeighborhoodRepository {
     
     @GET("/neighborhood/findAllNeighborhoodNameCity/name?")
     Call<List<Neighborhood>> getNeighborhoodCadastradosFK(@Query("name") String name);
+    
+    @PUT("/neighborhood/alterar/{id}")
+    Call<Boolean> alterar(@Path("id") Long id, @Body Neighborhood neighborhood);
 }

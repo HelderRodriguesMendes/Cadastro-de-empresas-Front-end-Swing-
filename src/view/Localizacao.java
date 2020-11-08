@@ -152,6 +152,9 @@ public class Localizacao extends javax.swing.JFrame {
 
             if (entidadeUtilizada.equals("vizinhanca")) {
                 btnVizinhanca_.setText("Alterar");
+                nomePais.setEnabled(false);
+                btn_TODOS_ESTADOS_.setVisible(false);
+                btn_TODAS_CIDADES_.setVisible(false);
             } else {
                 btnVizinhanca_.setText("Finalizar");
             }
@@ -1236,7 +1239,9 @@ public class Localizacao extends javax.swing.JFrame {
             id_SelecionadoNaTabela_estado = Long.parseLong(TABELA_Estados.getValueAt(TABELA_Estados.getSelectedRow(), 0).toString());
             txtNomeCidade_.setText("");
             txtNomeVizinhanca_.setText("");
-            txtNomeEstado_.setEnabled(true);
+            if (!status_Form.equals("alterar")) {
+                txtNomeEstado_.setEnabled(true);
+            }
         }
     }//GEN-LAST:event_TABELA_EstadosMouseClicked
 
@@ -1372,28 +1377,23 @@ public class Localizacao extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(Localizacao.this, "Informe a cidade", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
                 txtNomeCidade_.requestFocus();
             } else {
-                if (!jaListouTabelaNeighborhood) {
-                    NeighborhoodRepository neighborhoodRepository = retrofit.BaseURL().create(NeighborhoodRepository.class);
-                    Call<List<Neighborhood>> callState = neighborhoodRepository.getNeighborhoodCadastradosFK(txtNomeCidade_.getText());
-                    callState.enqueue(new Callback<List<Neighborhood>>() {
-                        @Override
-                        public void onResponse(Call<List<Neighborhood>> call, Response<List<Neighborhood>> rspns) {
-                            if (rspns.isSuccessful()) {
-                                List<Neighborhood> neighborhoods = rspns.body();
-                                listarTabelaNeighborhoodCadastradas(neighborhoods);
-                                jaListouTabelaCidades = true;
-                                callState.cancel();
-                                selecionar_guia(FORM_GUIAS.getSelectedIndex() + 1);
-                            }
+                NeighborhoodRepository neighborhoodRepository = retrofit.BaseURL().create(NeighborhoodRepository.class);
+                Call<List<Neighborhood>> callState = neighborhoodRepository.getNeighborhoodCadastradosFK(txtNomeCidade_.getText());
+                callState.enqueue(new Callback<List<Neighborhood>>() {
+                    @Override
+                    public void onResponse(Call<List<Neighborhood>> call, Response<List<Neighborhood>> rspns) {
+                        if (rspns.isSuccessful()) {
+                            List<Neighborhood> neighborhoods = rspns.body();
+                            listarTabelaNeighborhoodCadastradas(neighborhoods);
+                            callState.cancel();
+                            selecionar_guia(FORM_GUIAS.getSelectedIndex() + 1);
                         }
+                    }
 
-                        @Override
-                        public void onFailure(Call<List<Neighborhood>> call, Throwable thrwbl) {
-                        }
-                    });
-                } else {
-                    selecionar_guia(FORM_GUIAS.getSelectedIndex() + 1);
-                }
+                    @Override
+                    public void onFailure(Call<List<Neighborhood>> call, Throwable thrwbl) {
+                    }
+                });
             }
         }
     }//GEN-LAST:event_btnCidade_ActionPerformed
@@ -1478,27 +1478,51 @@ public class Localizacao extends javax.swing.JFrame {
             txtNomeCidade_.requestFocus();
         } else if (entidadeUtilizada.equals("vizinhanca")) {
 
-            //salvar Neighborhood
             NeighborhoodRepository BaseURL = retrofit.BaseURL().create(NeighborhoodRepository.class);
-            Call<Boolean> callState = BaseURL.salvar(preencherObjetoNeighborhood());
-            callState.enqueue(new Callback<Boolean>() {
-                @Override
-                public void onResponse(Call<Boolean> call, Response<Boolean> rspns) {
-                    if (rspns.isSuccessful()) {
-                        Boolean ok = rspns.body();
-                        if (ok) {
-                            JOptionPane.showMessageDialog(Localizacao.this, "Dados cadastrados com sucesso");
-                            Home h = new Home();
-                            h.habilitarForm();
-                            Localizacao.this.dispose();
+
+            //salvar Neighborhood
+            if (status_Form.equals("cadastrar")) {
+                Call<Boolean> callState = BaseURL.salvar(preencherObjetoNeighborhood());
+                callState.enqueue(new Callback<Boolean>() {
+                    @Override
+                    public void onResponse(Call<Boolean> call, Response<Boolean> rspns) {
+                        if (rspns.isSuccessful()) {
+                            Boolean ok = rspns.body();
+                            if (ok) {
+                                JOptionPane.showMessageDialog(Localizacao.this, "Dados cadastrados com sucesso");
+                                Home h = new Home();
+                                h.habilitarForm();
+                                Localizacao.this.dispose();
+                            }
                         }
                     }
-                }
 
-                @Override
-                public void onFailure(Call<Boolean> call, Throwable thrwbl) {
-                }
-            });
+                    @Override
+                    public void onFailure(Call<Boolean> call, Throwable thrwbl) {
+                    }
+                });
+            } else {
+                Call<Boolean> callState = BaseURL.alterar(id_SelecionadoNaTabela_vizinhanca, preencherObjetoNeighborhood());
+                callState.enqueue(new Callback<Boolean>() {
+                    @Override
+                    public void onResponse(Call<Boolean> call, Response<Boolean> rspns) {
+                        if (rspns.isSuccessful()) {
+                            Boolean ok = rspns.body();
+                            if (ok) {
+                                JOptionPane.showMessageDialog(Localizacao.this, "Dados Alterados com sucesso");
+                                Home h = new Home();
+                                h.habilitarForm();
+                                Localizacao.this.dispose();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Boolean> call, Throwable thrwbl) {
+                    }
+                });
+            }
+
         } else if (entidadeUtilizada.equals("companhia")) {
 
             Companhia c = new Companhia();

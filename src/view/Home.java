@@ -58,6 +58,7 @@ public class Home extends javax.swing.JFrame {
         alterar_Pais_ = new javax.swing.JMenuItem();
         alterar_Estado_ = new javax.swing.JMenuItem();
         alterar_Cidade_ = new javax.swing.JMenuItem();
+        alterar_Vizinhanca_ = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
         jMenu3 = new javax.swing.JMenu();
 
@@ -147,6 +148,14 @@ public class Home extends javax.swing.JFrame {
             }
         });
         menu_pesquisar_Alterar.add(alterar_Cidade_);
+
+        alterar_Vizinhanca_.setText("Vizinhança");
+        alterar_Vizinhanca_.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                alterar_Vizinhanca_ActionPerformed(evt);
+            }
+        });
+        menu_pesquisar_Alterar.add(alterar_Vizinhanca_);
 
         jMenuBar1.add(menu_pesquisar_Alterar);
 
@@ -250,6 +259,15 @@ public class Home extends javax.swing.JFrame {
         this.setVisible(false);
     }//GEN-LAST:event_alterar_Cidade_ActionPerformed
 
+    private void alterar_Vizinhanca_ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_alterar_Vizinhanca_ActionPerformed
+        Localizacao l = new Localizacao();
+        l.statusForm("alterar", "vizinhanca");
+        l.selecionar_guia(3);
+        l.setTitle("Alterar Vizinhança");
+        l.setVisible(true);
+        this.setVisible(false);
+    }//GEN-LAST:event_alterar_Vizinhanca_ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -291,6 +309,7 @@ public class Home extends javax.swing.JFrame {
     private javax.swing.JMenuItem alterar_Cidade_;
     private javax.swing.JMenuItem alterar_Estado_;
     private javax.swing.JMenuItem alterar_Pais_;
+    private javax.swing.JMenuItem alterar_Vizinhanca_;
     private javax.swing.JMenuItem cad_Cidade_;
     private javax.swing.JMenuItem cad_Estado_;
     private javax.swing.JMenuItem cad_Vizinhanca_;
