@@ -22,6 +22,7 @@ import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -70,7 +71,7 @@ public class Localizacao extends javax.swing.JFrame {
                         Home h = new Home();
                         h.habilitarForm();
                         Localizacao.this.dispose();
-                    }else{
+                    } else {
                         Companhia c = new Companhia();
                         c.habilitarForm();
                         Localizacao.this.dispose();
@@ -226,9 +227,16 @@ public class Localizacao extends javax.swing.JFrame {
     }
 
     public void preencherCampus(Company company) {
-        
+
         JOptionPane.showMessageDialog(Localizacao.this, "Informe o País, Estado, Cidade e Vizinhança da empresa que está sendo cadastrada", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
-        
+        combo_estados_.setVisible(false);
+        lblNomeCombo_estados.setVisible(false);
+        jLabel26.setVisible(false);
+
+        combo_cidades_.setVisible(false);
+        lblNomeCombo_cidades.setVisible(false);
+        jLabel25.setVisible(false);
+
         neighborhood = company.getNeighborhood();
         city = company.getCity();
         state = company.getState();
@@ -539,6 +547,11 @@ public class Localizacao extends javax.swing.JFrame {
         combo_estados_.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 combo_estados_ItemStateChanged(evt);
+            }
+        });
+        combo_estados_.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                combo_estados_ActionPerformed(evt);
             }
         });
 
@@ -956,11 +969,9 @@ public class Localizacao extends javax.swing.JFrame {
             callState.enqueue(new Callback<List<State>>() {
                 @Override
                 public void onResponse(Call<List<State>> call, Response<List<State>> rspns) {
-                    Localizacao l = new Localizacao();
                     if (rspns.isSuccessful()) {
                         List<State> state = rspns.body();
                         listarTabelaEstadosCadastrados(state);
-                        jaListouTabelaEstados = true;
                         callState.cancel();
                         selecionar_guia(FORM_GUIAS.getSelectedIndex() + 1);
                     }
@@ -978,6 +989,13 @@ public class Localizacao extends javax.swing.JFrame {
         if (this.FORM_GUIAS.getSelectedIndex() > 0) {
             //pega o numero da guia atual e diminui - 1 para voltar para a aba anterior
             selecionar_guia(this.FORM_GUIAS.getSelectedIndex() - 1);
+            lblNomeCombo_cidades.setVisible(false);
+            jLabel25.setVisible(false);
+            combo_cidades_.setVisible(false);
+            
+            lblNomeCombo_estados.setVisible(false);
+            jLabel26.setVisible(false);
+            combo_estados_.setVisible(false);
         } else {
             String ObjButtons[] = {"Sim", "Não"};
             int PromptResult = JOptionPane.showOptionDialog(null,
@@ -1062,35 +1080,27 @@ public class Localizacao extends javax.swing.JFrame {
                     combo_cidades_.setVisible(false);
                     btn_TODAS_CIDADES_.setVisible(false);
                 }
-                if (!jaListouTabelaCidades) {
-                    CityRepository cityRepository = retrofit.BaseURL().create(CityRepository.class);
-                    Call<List<City>> callState = cityRepository.getCitysCadastrados(txtNomeEstado_.getText());
-                    callState.enqueue(new Callback<List<City>>() {
-                        @Override
-                        public void onResponse(Call<List<City>> call, Response<List<City>> rspns) {
-                            if (rspns.isSuccessful()) {
-                                List<City> citys = rspns.body();
-                                listarTabelaCidadesCadastrados(citys);
-                                jaListouTabelaCidades = true;
-                                callState.cancel();
-                                selecionar_guia(FORM_GUIAS.getSelectedIndex() + 1);
-                                combo_estados_.setVisible(true);
-                                lblNomeCombo_estados.setVisible(true);
-                                nomePais.setEnabled(false);
-                            }
-                        }
 
-                        @Override
-                        public void onFailure(Call<List<City>> call, Throwable thrwbl) {
+                CityRepository cityRepository = retrofit.BaseURL().create(CityRepository.class);
+                Call<List<City>> callState = cityRepository.getCitysCadastrados(txtNomeEstado_.getText());
+                callState.enqueue(new Callback<List<City>>() {
+                    @Override
+                    public void onResponse(Call<List<City>> call, Response<List<City>> rspns) {
+                        if (rspns.isSuccessful()) {
+                            List<City> citys = rspns.body();
+                            listarTabelaCidadesCadastrados(citys);
+                            callState.cancel();
+                            selecionar_guia(FORM_GUIAS.getSelectedIndex() + 1);
+                            combo_estados_.setVisible(true);
+                            lblNomeCombo_estados.setVisible(true);
+                            nomePais.setEnabled(false);
                         }
-                    });
-                } else {
-                    //se no botao da aba PAIS estiver (Avançar), ir para proxima aba
-                    if (btnPais_.getText().equals("Avançar")) {
-                        //pega o numero da guia atual e acrescenta + 1 para ir para a proxima aba
-                        selecionar_guia(FORM_GUIAS.getSelectedIndex() + 1);
                     }
-                }
+
+                    @Override
+                    public void onFailure(Call<List<City>> call, Throwable thrwbl) {
+                    }
+                });
             }
         }
     }//GEN-LAST:event_btnEstado_ActionPerformed
@@ -1178,6 +1188,7 @@ public class Localizacao extends javax.swing.JFrame {
         } else if (nomePais.getText().equals("Brasil")) {
             lblNomeCombo_estados.setVisible(true);
             combo_estados_.setVisible(true);
+            jLabel26.setVisible(true);
 
             EstadoRepository_retrofit estado_retrofit = retrofit.BaseURL_estado().create(EstadoRepository_retrofit.class);
 
@@ -1201,6 +1212,7 @@ public class Localizacao extends javax.swing.JFrame {
                             combo_estados_.removeAll();
                             combo_estados_.addItem(e);
                         }
+                        btn_TODAS_CIDADES_.removeAll();
                         call.cancel();
                     }
                 }
@@ -1311,6 +1323,7 @@ public class Localizacao extends javax.swing.JFrame {
         } else if (nomePais.getText().equals("Brasil")) {
             lblNomeCombo_cidades.setVisible(true);
             combo_cidades_.setVisible(true);
+            jLabel25.setVisible(true);
             txtNomeCidade_.setEnabled(false);
 
             MunicipiosRepository municipiosRepository = retrofit.BaseURL_estado().create(MunicipiosRepository.class);
@@ -1320,6 +1333,8 @@ public class Localizacao extends javax.swing.JFrame {
             List<String> CIDADES = new ArrayList<>();
             Call<List<Cidade_retrofit>> call = municipiosRepository.getCidades(UF);
 
+            combo_cidades_.removeAllItems();
+            combo_cidades_.addItem("Selecione");
             call.enqueue(new Callback<List<Cidade_retrofit>>() {
                 @Override
                 public void onResponse(Call<List<Cidade_retrofit>> call, Response<List<Cidade_retrofit>> response) {
@@ -1351,7 +1366,15 @@ public class Localizacao extends javax.swing.JFrame {
 
     private void combo_cidades_ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_combo_cidades_ItemStateChanged
         //pega a cidade selecionada e exibe no campo de texto NOME que esta desabilitado
-        txtNomeCidade_.setText(combo_cidades_.getSelectedItem().toString());
+        if (combo_cidades_.getSelectedItem() != null) {
+            String cidade = combo_cidades_.getSelectedItem().toString();
+            if(!cidade.equals("Selecione")){
+                txtNomeCidade_.setText(cidade);
+            }else{
+                txtNomeCidade_.setText("");
+            }
+            
+        }
     }//GEN-LAST:event_combo_cidades_ItemStateChanged
 
     private void btnVizinhanca_ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVizinhanca_ActionPerformed
@@ -1391,11 +1414,11 @@ public class Localizacao extends javax.swing.JFrame {
                 }
             });
         } else if (entidadeUtilizada.equals("companhia")) {
-            
+
             Companhia c = new Companhia();
             c.preencherCampusLocalizacao(preencherObjetoNeighborhood());
             c.habilitarForm();
-            if(status_Form.equals("cadastrar")){
+            if (status_Form.equals("cadastrar")) {
                 c.setTitle("Cadastrar Companhia");
             }
             Localizacao.this.dispose();
@@ -1436,6 +1459,10 @@ public class Localizacao extends javax.swing.JFrame {
     private void txtNomeCidade_KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtNomeCidade_KeyPressed
         txtNomeVizinhanca_.setText("");
     }//GEN-LAST:event_txtNomeCidade_KeyPressed
+
+    private void combo_estados_ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_combo_estados_ActionPerformed
+        txtNomeCidade_.setText("");
+    }//GEN-LAST:event_combo_estados_ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTabbedPane FORM_GUIAS;
