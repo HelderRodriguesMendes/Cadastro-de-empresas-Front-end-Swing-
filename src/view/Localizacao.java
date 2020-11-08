@@ -27,6 +27,7 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import model.City;
+import model.Company;
 import model.Country;
 import model.Neighborhood;
 import model.State;
@@ -43,8 +44,13 @@ public class Localizacao extends javax.swing.JFrame {
     private static String status_Form = "", entidadeUtilizada = "";
     Retrofit_URL retrofit = new Retrofit_URL();
     StateController stateController = new StateController();
-    boolean jaBuscoEstados = false, jaBuscoCidades = false, jaListouTabelaEstados = false, jaListouTabelaCidades = false, jaListouTabelaNeighborhood = false;
+    boolean jaBuscoCidades = false, jaListouTabelaEstados = false, jaListouTabelaCidades = false, jaListouTabelaNeighborhood = false;
     Long id_SelecionadoNaTabela_pais = null, id_SelecionadoNaTabela_estado = null, id_SelecionadoNaTabela_cidade = null, id_SelecionadoNaTabela_vizinhanca = null;
+
+    Country country = new Country();
+    State state = new State();
+    City city = new City();
+    Neighborhood neighborhood = new Neighborhood();
 
     public Localizacao() {
         initComponents();
@@ -60,12 +66,15 @@ public class Localizacao extends javax.swing.JFrame {
                         JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null,
                         ObjButtons, ObjButtons[1]);
                 if (PromptResult == 0) {
-                    if (!status_Form.equals("cadastro_company")) {
+                    if (!entidadeUtilizada.equals("companhia")) {
                         Home h = new Home();
                         h.habilitarForm();
                         Localizacao.this.dispose();
+                    }else{
+                        Companhia c = new Companhia();
+                        c.habilitarForm();
+                        Localizacao.this.dispose();
                     }
-
                 }
             }
         });
@@ -90,7 +99,7 @@ public class Localizacao extends javax.swing.JFrame {
     }
 
     //configura os campus da janela
-    public void configForm(int form) {
+    private void configForm(int form) {
 
         //configurando o titulo dos botoes de cada entidade
         if (status_Form.equals("cadastrar")) {
@@ -150,6 +159,7 @@ public class Localizacao extends javax.swing.JFrame {
             if (!nomePais.getText().equals("Brasil")) {
                 combo_estados_.setVisible(false);
                 lblNomeCombo_estados.setVisible(false);
+                jLabel26.setVisible(false);
             } else {
                 txtNomeEstado_.setEnabled(false);
             }
@@ -157,6 +167,7 @@ public class Localizacao extends javax.swing.JFrame {
             if (!nomePais.getText().equals("Brasil")) {
                 combo_cidades_.setVisible(false);
                 lblNomeCombo_cidades.setVisible(false);
+                jLabel25.setVisible(false);
             } else {
                 txtNomeCidade_.setEnabled(false);
             }
@@ -194,7 +205,49 @@ public class Localizacao extends javax.swing.JFrame {
         }
     }
 
-    public void listarTabelaPaisesCadastrados(List<Country> countryCadastrados) {
+    private Neighborhood preencherObjetoNeighborhood() {
+        country.setId(id_SelecionadoNaTabela_pais);
+        country.setName(nomePais.getText());
+
+        state.setId(id_SelecionadoNaTabela_estado);
+        state.setName(txtNomeEstado_.getText());
+        state.setCountry(country);
+
+        city.setId(id_SelecionadoNaTabela_cidade);
+        city.setName(txtNomeCidade_.getText());
+        city.setState(state);
+
+        neighborhood.setId(id_SelecionadoNaTabela_vizinhanca);
+        neighborhood.setName(txtNomeVizinhanca_.getText());
+        neighborhood.setAtivo(true);
+        neighborhood.setCity(city);
+
+        return neighborhood;
+    }
+
+    public void preencherCampus(Company company) {
+        
+        JOptionPane.showMessageDialog(Localizacao.this, "Informe o País, Estado, Cidade e Vizinhança da empresa que está sendo cadastrada", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
+        
+        neighborhood = company.getNeighborhood();
+        city = company.getCity();
+        state = company.getState();
+        country = company.getCountry();
+
+        nomePais.setText(country.getName());
+        id_SelecionadoNaTabela_pais = country.getId();
+
+        txtNomeEstado_.setText(state.getName());
+        id_SelecionadoNaTabela_estado = state.getId();
+
+        txtNomeCidade_.setText(city.getName());
+        id_SelecionadoNaTabela_cidade = city.getId();
+
+        txtNomeVizinhanca_.setText(neighborhood.getName());
+        id_SelecionadoNaTabela_vizinhanca = neighborhood.getId();
+    }
+
+    private void listarTabelaPaisesCadastrados(List<Country> countryCadastrados) {
         DefaultTableModel dtma = (DefaultTableModel) TABELA_Pais.getModel();
         dtma.setNumRows(0);
         TABELA_Pais.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
@@ -212,7 +265,7 @@ public class Localizacao extends javax.swing.JFrame {
         TABELA_Pais.getTableHeader().setReorderingAllowed(false);      // BLOQUIA AS COLUNAS DA TABELA PARA NÃO MOVELAS DO LUGAR
     }
 
-    public void listarTabelaEstadosCadastrados(List<State> statesCadastrados) {
+    private void listarTabelaEstadosCadastrados(List<State> statesCadastrados) {
 
         //ORDENANDO LISTA
         Collections.sort(statesCadastrados, (State s1, State s2) -> s1.getName().toUpperCase().compareTo(s2.getName().toUpperCase()));
@@ -234,7 +287,7 @@ public class Localizacao extends javax.swing.JFrame {
         TABELA_Estados.getTableHeader().setReorderingAllowed(false);      // BLOQUIA AS COLUNAS DA TABELA PARA NÃO MOVELAS DO LUGAR
     }
 
-    public void listarTabelaCidadesCadastrados(List<City> citysCadastradas) {
+    private void listarTabelaCidadesCadastrados(List<City> citysCadastradas) {
         //ORDENANDO LISTA
         Collections.sort(citysCadastradas, (City c1, City c2) -> c1.getName().toUpperCase().compareTo(c2.getName().toUpperCase()));
 
@@ -255,7 +308,7 @@ public class Localizacao extends javax.swing.JFrame {
         TABELA_cidade.getTableHeader().setReorderingAllowed(false);      // BLOQUIA AS COLUNAS DA TABELA PARA NÃO MOVELAS DO LUGAR
     }
 
-    public void listarTabelaNeighborhoodCadastradas(List<Neighborhood> neighborhoodCadastradas) {
+    private void listarTabelaNeighborhoodCadastradas(List<Neighborhood> neighborhoodCadastradas) {
         //ORDENANDO LISTA
         Collections.sort(neighborhoodCadastradas, (Neighborhood n1, Neighborhood n2) -> n1.getName().toUpperCase().compareTo(n2.getName().toUpperCase()));
 
@@ -276,7 +329,7 @@ public class Localizacao extends javax.swing.JFrame {
         TABELA_vizinhanca.getTableHeader().setReorderingAllowed(false);      // BLOQUIA AS COLUNAS DA TABELA PARA NÃO MOVELAS DO LUGAR
     }
 
-    public void corLinhaTabelaAnuidade(JTable tabela) {
+    private void corLinhaTabelaAnuidade(JTable tabela) {
         tabela.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value,
@@ -312,6 +365,7 @@ public class Localizacao extends javax.swing.JFrame {
         jLabel11 = new javax.swing.JLabel();
         txtPesquisarPais = new javax.swing.JTextField();
         jLabel12 = new javax.swing.JLabel();
+        jLabel28 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         txtNomeEstado_ = new javax.swing.JTextField();
@@ -322,6 +376,8 @@ public class Localizacao extends javax.swing.JFrame {
         TABELA_Estados = new javax.swing.JTable();
         jLabel9 = new javax.swing.JLabel();
         btn_TODOS_ESTADOS_ = new javax.swing.JButton();
+        jLabel26 = new javax.swing.JLabel();
+        jLabel27 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         lblNomeCombo_cidades = new javax.swing.JLabel();
         combo_cidades_ = new javax.swing.JComboBox<>();
@@ -332,6 +388,8 @@ public class Localizacao extends javax.swing.JFrame {
         TABELA_cidade = new javax.swing.JTable();
         btn_TODAS_CIDADES_ = new javax.swing.JButton();
         jLabel10 = new javax.swing.JLabel();
+        jLabel24 = new javax.swing.JLabel();
+        jLabel25 = new javax.swing.JLabel();
         jPanel5 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
         txtNomeVizinhanca_ = new javax.swing.JTextField();
@@ -339,6 +397,7 @@ public class Localizacao extends javax.swing.JFrame {
         jScrollPane3 = new javax.swing.JScrollPane();
         TABELA_vizinhanca = new javax.swing.JTable();
         jLabel13 = new javax.swing.JLabel();
+        jLabel23 = new javax.swing.JLabel();
         lblVoltar_ = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
@@ -398,53 +457,74 @@ public class Localizacao extends javax.swing.JFrame {
             }
         });
 
+        jLabel28.setBackground(new java.awt.Color(255, 0, 0));
+        jLabel28.setFont(new java.awt.Font("Dialog", 0, 30)); // NOI18N
+        jLabel28.setForeground(new java.awt.Color(255, 0, 51));
+        jLabel28.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel28.setText("*");
+        jLabel28.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+        jLabel28.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addComponent(btnPais_)
+                .addGap(82, 82, 82)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(jPanel1Layout.createSequentialGroup()
                             .addComponent(jLabel1)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(jLabel28))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(btnPais_)
                             .addComponent(nomePais, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel11)
-                        .addGap(0, 0, 0)
-                        .addComponent(txtPesquisarPais, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, 0)
-                        .addComponent(jLabel12))
-                    .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(113, Short.MAX_VALUE))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(txtPesquisarPais, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel11)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(12, 12, 12)
+                                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(1, 1, 1)
+                        .addComponent(jLabel12)))
+                .addContainerGap(91, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(23, 23, 23)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabel1)
-                    .addComponent(nomePais, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel28, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(nomePais, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnPais_)
-                .addGap(26, 26, 26)
+                .addGap(28, 28, 28)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel12)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(10, 10, 10)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel11)
-                            .addComponent(txtPesquisarPais, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addGap(6, 6, 6)
+                        .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel11)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtPesquisarPais, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 174, Short.MAX_VALUE)
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 253, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
         FORM_GUIAS.addTab("País", jPanel1);
 
         jLabel2.setText("Nome:");
+
+        txtNomeEstado_.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtNomeEstado_KeyPressed(evt);
+            }
+        });
 
         btnEstado_.setText("jButton1");
         btnEstado_.addActionListener(new java.awt.event.ActionListener() {
@@ -501,58 +581,74 @@ public class Localizacao extends javax.swing.JFrame {
             }
         });
 
+        jLabel26.setBackground(new java.awt.Color(255, 0, 0));
+        jLabel26.setFont(new java.awt.Font("Dialog", 0, 30)); // NOI18N
+        jLabel26.setForeground(new java.awt.Color(255, 0, 51));
+        jLabel26.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel26.setText("*");
+        jLabel26.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+        jLabel26.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+
+        jLabel27.setBackground(new java.awt.Color(255, 0, 0));
+        jLabel27.setFont(new java.awt.Font("Dialog", 0, 30)); // NOI18N
+        jLabel27.setForeground(new java.awt.Color(255, 0, 51));
+        jLabel27.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel27.setText("*");
+        jLabel27.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+        jLabel27.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(49, 49, 49)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(12, 12, 12)
-                        .addComponent(jLabel2)
-                        .addGap(12, 12, 12)
-                        .addComponent(txtNomeEstado_, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                         .addGroup(jPanel2Layout.createSequentialGroup()
-                            .addContainerGap()
+                            .addGap(37, 37, 37)
                             .addComponent(btn_TODOS_ESTADOS_)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                             .addComponent(btnEstado_))
+                        .addComponent(combo_estados_, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 179, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
-                            .addGap(12, 12, 12)
                             .addComponent(lblNomeCombo_estados)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(combo_estados_, javax.swing.GroupLayout.PREFERRED_SIZE, 179, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(jLabel26))
+                        .addComponent(jLabel9, javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 201, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(49, 49, 49)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel9)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 201, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(31, Short.MAX_VALUE))
+                        .addComponent(jLabel2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel27))
+                    .addComponent(txtNomeEstado_, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(49, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(12, 12, 12)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addContainerGap()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel2)
+                    .addComponent(jLabel27, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(2, 2, 2)
-                        .addComponent(jLabel2))
-                    .addComponent(txtNomeEstado_, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(6, 6, 6)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(5, 5, 5)
+                        .addComponent(txtNomeEstado_, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(24, 24, 24)
                         .addComponent(lblNomeCombo_estados))
-                    .addComponent(combo_estados_, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel26, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(combo_estados_, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(9, 9, 9)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnEstado_)
                     .addComponent(btn_TODOS_ESTADOS_))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 30, Short.MAX_VALUE)
+                .addGap(28, 28, 28)
                 .addComponent(jLabel9)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 174, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 210, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         FORM_GUIAS.addTab("Estado", jPanel2);
@@ -563,6 +659,12 @@ public class Localizacao extends javax.swing.JFrame {
         combo_cidades_.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 combo_cidades_ItemStateChanged(evt);
+            }
+        });
+
+        txtNomeCidade_.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtNomeCidade_KeyPressed(evt);
             }
         });
 
@@ -614,51 +716,78 @@ public class Localizacao extends javax.swing.JFrame {
 
         jLabel10.setText("Cidades cadastradas");
 
+        jLabel24.setBackground(new java.awt.Color(255, 0, 0));
+        jLabel24.setFont(new java.awt.Font("Dialog", 0, 30)); // NOI18N
+        jLabel24.setForeground(new java.awt.Color(255, 0, 51));
+        jLabel24.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel24.setText("*");
+        jLabel24.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+        jLabel24.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+
+        jLabel25.setBackground(new java.awt.Color(255, 0, 0));
+        jLabel25.setFont(new java.awt.Font("Dialog", 0, 30)); // NOI18N
+        jLabel25.setForeground(new java.awt.Color(255, 0, 51));
+        jLabel25.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel25.setText("*");
+        jLabel25.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+        jLabel25.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(50, 50, 50)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel3Layout.createSequentialGroup()
-                        .addComponent(jLabel5)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtNomeCidade_, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel10))
-                        .addGroup(jPanel3Layout.createSequentialGroup()
-                            .addComponent(lblNomeCombo_cidades)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addComponent(lblNomeCombo_cidades)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel25))
                             .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                 .addComponent(combo_cidades_, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addGroup(jPanel3Layout.createSequentialGroup()
                                     .addComponent(btn_TODAS_CIDADES_)
                                     .addGap(18, 18, 18)
-                                    .addComponent(btnCidade_))))))
-                .addContainerGap(48, Short.MAX_VALUE))
+                                    .addComponent(btnCidade_)))))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel3Layout.createSequentialGroup()
+                        .addGap(12, 12, 12)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addComponent(jLabel5)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel24))
+                            .addComponent(txtNomeCidade_, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap(61, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabel5)
-                    .addComponent(txtNomeCidade_, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel24, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addComponent(txtNomeCidade_, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(lblNomeCombo_cidades)
-                    .addComponent(combo_cidades_, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel25, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(combo_cidades_, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnCidade_)
                     .addComponent(btn_TODAS_CIDADES_))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 19, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 43, Short.MAX_VALUE)
                 .addComponent(jLabel10)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
 
         FORM_GUIAS.addTab("Cidade", jPanel3);
@@ -704,37 +833,51 @@ public class Localizacao extends javax.swing.JFrame {
 
         jLabel13.setText("Cidades cadastradas");
 
+        jLabel23.setBackground(new java.awt.Color(255, 0, 0));
+        jLabel23.setFont(new java.awt.Font("Dialog", 0, 30)); // NOI18N
+        jLabel23.setForeground(new java.awt.Color(255, 0, 51));
+        jLabel23.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel23.setText("*");
+        jLabel23.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+        jLabel23.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
         jPanel5Layout.setHorizontalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
-                .addContainerGap(30, Short.MAX_VALUE)
+                .addContainerGap(57, Short.MAX_VALUE)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addGap(15, 15, 15)
+                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel5Layout.createSequentialGroup()
+                                .addComponent(jLabel3)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel23))
+                            .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addComponent(btnVizinhanca_)
+                                .addComponent(txtNomeVizinhanca_, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE))))
                     .addComponent(jLabel13)
-                    .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addComponent(btnVizinhanca_)
-                        .addGroup(jPanel5Layout.createSequentialGroup()
-                            .addComponent(jLabel3)
-                            .addGap(3, 3, 3)
-                            .addComponent(txtNomeVizinhanca_, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addGap(63, 63, 63))
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(54, 54, 54))
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel5Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabel3)
-                    .addComponent(txtNomeVizinhanca_, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel23, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txtNomeVizinhanca_, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnVizinhanca_)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 37, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 45, Short.MAX_VALUE)
                 .addComponent(jLabel13)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 251, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(27, 27, 27))
         );
 
         FORM_GUIAS.addTab("Vizinhança", jPanel5);
@@ -750,8 +893,10 @@ public class Localizacao extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(lblVoltar_, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addComponent(FORM_GUIAS, javax.swing.GroupLayout.PREFERRED_SIZE, 286, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(lblVoltar_, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(FORM_GUIAS)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -771,7 +916,6 @@ public class Localizacao extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(Localizacao.this, "Informe o país");
             nomePais.requestFocus();
         } else if (entidadeUtilizada.equals("pais")) {
-            Country country = new Country();
             country.setId(id_SelecionadoNaTabela_pais);
             country.setName(nomePais.getText());
 
@@ -871,11 +1015,9 @@ public class Localizacao extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(Localizacao.this, "Informe o estado", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
                 txtNomeEstado_.requestFocus();
             } else {
-                Country country = new Country();
                 country.setId(id_SelecionadoNaTabela_pais);
                 country.setName(nomePais.getText());
 
-                State state = new State();
                 state.setId(id_SelecionadoNaTabela_estado);
                 state.setName(txtNomeEstado_.getText());
                 state.setCountry(country);
@@ -1020,6 +1162,8 @@ public class Localizacao extends javax.swing.JFrame {
             String estado = TABELA_Estados.getValueAt(TABELA_Estados.getSelectedRow(), 1).toString();
             txtNomeEstado_.setText(estado);
             id_SelecionadoNaTabela_estado = Long.parseLong(TABELA_Estados.getValueAt(TABELA_Estados.getSelectedRow(), 0).toString());
+            txtNomeCidade_.setText("");
+            txtNomeVizinhanca_.setText("");
         }
     }//GEN-LAST:event_TABELA_EstadosMouseClicked
 
@@ -1088,16 +1232,13 @@ public class Localizacao extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(Localizacao.this, "Informe a cidade", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
                 txtNomeCidade_.requestFocus();
             } else {
-                Country country = new Country();
                 country.setId(id_SelecionadoNaTabela_pais);
                 country.setName(nomePais.getText());
 
-                State state = new State();
                 state.setId(id_SelecionadoNaTabela_estado);
                 state.setName(txtNomeEstado_.getText());
                 state.setCountry(country);
 
-                City city = new City();
                 city.setId(id_SelecionadoNaTabela_cidade);
                 city.setName(txtNomeCidade_.getText());
                 city.setState(state);
@@ -1214,62 +1355,52 @@ public class Localizacao extends javax.swing.JFrame {
     }//GEN-LAST:event_combo_cidades_ItemStateChanged
 
     private void btnVizinhanca_ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVizinhanca_ActionPerformed
-        if (entidadeUtilizada.equals("vizinhanca")) {
-            //verifica se o pais foi informado, porque o estado depende do pais no cadastro
-            if (txtNomeCidade_.getText().equals("")) {
-                JOptionPane.showMessageDialog(Localizacao.this, "Informe a cidade desta vizinhança", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
-                nomePais.requestFocus();
 
-                //volta para a aba de pais, para o mesmo ser informado
-                selecionar_guia(this.FORM_GUIAS.getSelectedIndex() - 1);
+        //verifica se o pais foi informado, porque o estado depende do pais no cadastro
+        if (txtNomeCidade_.getText().equals("")) {
+            JOptionPane.showMessageDialog(Localizacao.this, "Informe a cidade desta vizinhança", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
+            nomePais.requestFocus();
 
-            } else if (txtNomeVizinhanca_.getText().equals("")) {
-                JOptionPane.showMessageDialog(Localizacao.this, "Informe a vizinhança", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
-                txtNomeCidade_.requestFocus();
-            } else {
-                Country country = new Country();
-                country.setId(id_SelecionadoNaTabela_pais);
-                country.setName(nomePais.getText());
+            //volta para a aba de pais, para o mesmo ser informado
+            selecionar_guia(this.FORM_GUIAS.getSelectedIndex() - 1);
 
-                State state = new State();
-                state.setId(id_SelecionadoNaTabela_estado);
-                state.setName(txtNomeEstado_.getText());
-                state.setCountry(country);
+        } else if (txtNomeVizinhanca_.getText().equals("")) {
+            JOptionPane.showMessageDialog(Localizacao.this, "Informe a vizinhança", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
+            txtNomeCidade_.requestFocus();
+        } else if (entidadeUtilizada.equals("vizinhanca")) {
 
-                City city = new City();
-                city.setId(id_SelecionadoNaTabela_cidade);
-                city.setName(txtNomeCidade_.getText());
-                city.setState(state);
-
-                Neighborhood neighborhood = new Neighborhood();
-                neighborhood.setId(id_SelecionadoNaTabela_vizinhanca);
-                neighborhood.setName(txtNomeVizinhanca_.getText());
-                neighborhood.setAtivo(true);
-                neighborhood.setCity(city);
-
-                //salvar Neighborhood
-                NeighborhoodRepository BaseURL = retrofit.BaseURL().create(NeighborhoodRepository.class);
-                Call<Boolean> callState = BaseURL.salvar(neighborhood);
-                callState.enqueue(new Callback<Boolean>() {
-                    @Override
-                    public void onResponse(Call<Boolean> call, Response<Boolean> rspns) {
-                        if (rspns.isSuccessful()) {
-                            Boolean ok = rspns.body();
-                            if (ok) {
-                                JOptionPane.showMessageDialog(Localizacao.this, "Dados cadastrados com sucesso");
-                                Home h = new Home();
-                                h.habilitarForm();
-                                Localizacao.this.dispose();
-                            }
+            //salvar Neighborhood
+            NeighborhoodRepository BaseURL = retrofit.BaseURL().create(NeighborhoodRepository.class);
+            Call<Boolean> callState = BaseURL.salvar(preencherObjetoNeighborhood());
+            callState.enqueue(new Callback<Boolean>() {
+                @Override
+                public void onResponse(Call<Boolean> call, Response<Boolean> rspns) {
+                    if (rspns.isSuccessful()) {
+                        Boolean ok = rspns.body();
+                        if (ok) {
+                            JOptionPane.showMessageDialog(Localizacao.this, "Dados cadastrados com sucesso");
+                            Home h = new Home();
+                            h.habilitarForm();
+                            Localizacao.this.dispose();
                         }
                     }
+                }
 
-                    @Override
-                    public void onFailure(Call<Boolean> call, Throwable thrwbl) {
-                    }
-                });
+                @Override
+                public void onFailure(Call<Boolean> call, Throwable thrwbl) {
+                }
+            });
+        } else if (entidadeUtilizada.equals("companhia")) {
+            
+            Companhia c = new Companhia();
+            c.preencherCampusLocalizacao(preencherObjetoNeighborhood());
+            c.habilitarForm();
+            if(status_Form.equals("cadastrar")){
+                c.setTitle("Cadastrar Companhia");
             }
+            Localizacao.this.dispose();
         }
+
     }//GEN-LAST:event_btnVizinhanca_ActionPerformed
 
     private void TABELA_cidadeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TABELA_cidadeMouseClicked
@@ -1278,6 +1409,7 @@ public class Localizacao extends javax.swing.JFrame {
             String cidade = TABELA_cidade.getValueAt(TABELA_cidade.getSelectedRow(), 1).toString();
             txtNomeCidade_.setText(cidade);
             id_SelecionadoNaTabela_cidade = Long.parseLong(TABELA_cidade.getValueAt(TABELA_cidade.getSelectedRow(), 0).toString());
+            txtNomeVizinhanca_.setText("");
         }
     }//GEN-LAST:event_TABELA_cidadeMouseClicked
 
@@ -1295,6 +1427,15 @@ public class Localizacao extends javax.swing.JFrame {
         txtNomeCidade_.setText("");
         txtNomeVizinhanca_.setText("");
     }//GEN-LAST:event_nomePaisKeyPressed
+
+    private void txtNomeEstado_KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtNomeEstado_KeyPressed
+        txtNomeCidade_.setText("");
+        txtNomeVizinhanca_.setText("");
+    }//GEN-LAST:event_txtNomeEstado_KeyPressed
+
+    private void txtNomeCidade_KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtNomeCidade_KeyPressed
+        txtNomeVizinhanca_.setText("");
+    }//GEN-LAST:event_txtNomeCidade_KeyPressed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTabbedPane FORM_GUIAS;
@@ -1316,6 +1457,12 @@ public class Localizacao extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel23;
+    private javax.swing.JLabel jLabel24;
+    private javax.swing.JLabel jLabel25;
+    private javax.swing.JLabel jLabel26;
+    private javax.swing.JLabel jLabel27;
+    private javax.swing.JLabel jLabel28;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel9;
