@@ -938,10 +938,10 @@ public class Localizacao extends javax.swing.JFrame {
         if (txt_nomePais.getText().equals("")) {
             JOptionPane.showMessageDialog(Localizacao.this, "Informe o país");
             txt_nomePais.requestFocus();
-        } else if(txt_nomePais.getText().length() < 2 || txt_nomePais.getText().length() > 30){
+        } else if (txt_nomePais.getText().length() < 2 || txt_nomePais.getText().length() > 30) {
             JOptionPane.showMessageDialog(Localizacao.this, "O Nome do País deve conter entre 2 a 30 caracteres", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
             txt_nomePais.requestFocus();
-        }else if (entidadeUtilizada.equals("pais")) {
+        } else if (entidadeUtilizada.equals("pais")) {
             country.setId(id_SelecionadoNaTabela_pais);
             country.setName(txt_nomePais.getText());
 
@@ -1000,6 +1000,9 @@ public class Localizacao extends javax.swing.JFrame {
                 btn_TODOS_ESTADOS_.setVisible(false);
             } else {
                 btn_TODOS_ESTADOS_.setVisible(true);
+                combo_estados_.setVisible(false);
+                lblNomeCombo_estados.setVisible(false);
+                jLabel26.setVisible(false);
             }
             StateRepository stateRepository = retrofit.BaseURL().create(StateRepository.class);
             Call<List<State>> callState = stateRepository.getStatesCadastrados_Country(txt_nomePais.getText());
@@ -1154,6 +1157,10 @@ public class Localizacao extends javax.swing.JFrame {
                     lblNomeCombo_cidades.setVisible(false);
                     combo_cidades_.setVisible(false);
                     btn_TODAS_CIDADES_.setVisible(false);
+                } else {
+                    lblNomeCombo_cidades.setVisible(false);
+                    combo_cidades_.setVisible(false);
+                    jLabel25.setVisible(false);
                 }
 
                 CityRepository cityRepository = retrofit.BaseURL().create(CityRepository.class);
@@ -1250,7 +1257,7 @@ public class Localizacao extends javax.swing.JFrame {
             id_SelecionadoNaTabela_estado = Long.parseLong(TABELA_Estados.getValueAt(TABELA_Estados.getSelectedRow(), 0).toString());
             txtNomeCidade_.setText("");
             txtNomeVizinhanca_.setText("");
-            if (!status_Form.equals("alterar")) {
+            if (!status_Form.equals("alterar") && !entidadeUtilizada.equals("estado")) {
                 txtNomeEstado_.setEnabled(true);
             }
         }
@@ -1306,13 +1313,13 @@ public class Localizacao extends javax.swing.JFrame {
 
     private void btnCidade_ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCidade_ActionPerformed
 
-        //verifica se o pais foi informado, porque o estado depende do pais no cadastro
-        if (txtNomeEstado_.getText().equals("")) {
-            JOptionPane.showMessageDialog(Localizacao.this, "Informe o estado desta cidade", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
+        //verifica se o pais e estado foi informado
+        if (txt_nomePais.getText().equals("")) {
+            JOptionPane.showMessageDialog(Localizacao.this, "Informe o País e Estado desta cidade", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
             txt_nomePais.requestFocus();
 
-            //volta para a aba de pais, para o mesmo ser informado
-            selecionar_guia(this.FORM_GUIAS.getSelectedIndex() - 1);
+            //volta para a aba de pais
+            selecionar_guia(this.FORM_GUIAS.getSelectedIndex() - 2);
 
             //se estiver cadastrando apenas a cidade
         } else if (entidadeUtilizada.equals("cidade")) {
@@ -1482,13 +1489,13 @@ public class Localizacao extends javax.swing.JFrame {
 
     private void btnVizinhanca_ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVizinhanca_ActionPerformed
 
-        //verifica se o pais foi informado, porque o estado depende do pais no cadastro
-        if (txtNomeCidade_.getText().equals("")) {
-            JOptionPane.showMessageDialog(Localizacao.this, "Informe a cidade desta vizinhança", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
+        //verifica se o pais, estado e cidade foi informado
+        if (txt_nomePais.getText().equals("")) {
+            JOptionPane.showMessageDialog(Localizacao.this, "Informe O País, Estado e Cidade desta vizinhança", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
             txt_nomePais.requestFocus();
 
-            //volta para a aba de pais, para o mesmo ser informado
-            selecionar_guia(this.FORM_GUIAS.getSelectedIndex() - 1);
+            //volta para a aba de pais
+            selecionar_guia(this.FORM_GUIAS.getSelectedIndex() - 3);
 
         } else if (txtNomeVizinhanca_.getText().equals("")) {
             JOptionPane.showMessageDialog(Localizacao.this, "Informe a vizinhança", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
