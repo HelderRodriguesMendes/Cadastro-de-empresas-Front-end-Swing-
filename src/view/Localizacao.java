@@ -132,6 +132,7 @@ public class Localizacao extends javax.swing.JFrame {
 
             if (entidadeUtilizada.equals("pais")) {
                 btnPais_.setText("Alterar");
+                nomePais.setEnabled(false);
             } else {
                 btnPais_.setText("Avançar");
             }
@@ -932,29 +933,53 @@ public class Localizacao extends javax.swing.JFrame {
             country.setId(id_SelecionadoNaTabela_pais);
             country.setName(nomePais.getText());
 
-            //salvar pais
             CountryRepository BaseURL = retrofit.BaseURL().create(CountryRepository.class);
-            Call<Boolean> callState = BaseURL.salvar(country);
-            callState.enqueue(new Callback<Boolean>() {
-                @Override
-                public void onResponse(Call<Boolean> call, Response<Boolean> rspns) {
-                    Localizacao l = new Localizacao();
-                    if (rspns.isSuccessful()) {
-                        Boolean ok = rspns.body();
-                        if (ok) {
-                            JOptionPane.showMessageDialog(Localizacao.this, "Dados cadastrados com sucesso");
-                            Home h = new Home();
-                            h.habilitarForm();
-                            Localizacao.this.dispose();
+            //salvar pais 
+            if (status_Form.equals("cadastrar")) {
+                Call<Boolean> callState = BaseURL.salvar(country);
+                callState.enqueue(new Callback<Boolean>() {
+                    @Override
+                    public void onResponse(Call<Boolean> call, Response<Boolean> rspns) {
+                        Localizacao l = new Localizacao();
+                        if (rspns.isSuccessful()) {
+                            Boolean ok = rspns.body();
+                            if (ok) {
+                                JOptionPane.showMessageDialog(Localizacao.this, "Dados cadastrados com sucesso");
+                                Home h = new Home();
+                                h.habilitarForm();
+                                Localizacao.this.dispose();
+                            }
+                            callState.cancel();
                         }
-                        callState.cancel();
                     }
-                }
 
-                @Override
-                public void onFailure(Call<Boolean> call, Throwable thrwbl) {
-                }
-            });
+                    @Override
+                    public void onFailure(Call<Boolean> call, Throwable thrwbl) {
+                    }
+                });
+            } else {
+                Call<Boolean> callState = BaseURL.alterar(id_SelecionadoNaTabela_pais, country);
+                callState.enqueue(new Callback<Boolean>() {
+                    @Override
+                    public void onResponse(Call<Boolean> call, Response<Boolean> rspns) {
+                        Localizacao l = new Localizacao();
+                        if (rspns.isSuccessful()) {
+                            Boolean ok = rspns.body();
+                            if (ok) {
+                                JOptionPane.showMessageDialog(Localizacao.this, "Dados Alterados com sucesso");
+                                Home h = new Home();
+                                h.habilitarForm();
+                                Localizacao.this.dispose();
+                            }
+                            callState.cancel();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Boolean> call, Throwable thrwbl) {
+                    }
+                });
+            }
 
         } else {
             if (!nomePais.getText().equals("Brasil")) {
@@ -992,7 +1017,7 @@ public class Localizacao extends javax.swing.JFrame {
             lblNomeCombo_cidades.setVisible(false);
             jLabel25.setVisible(false);
             combo_cidades_.setVisible(false);
-            
+
             lblNomeCombo_estados.setVisible(false);
             jLabel26.setVisible(false);
             combo_estados_.setVisible(false);
@@ -1160,6 +1185,7 @@ public class Localizacao extends javax.swing.JFrame {
         if (!(status_Form.equals("cadastrar") && entidadeUtilizada.equals("pais"))) {
             nomePais.setText(TABELA_Pais.getValueAt(TABELA_Pais.getSelectedRow(), 1).toString());
             id_SelecionadoNaTabela_pais = Long.parseLong(TABELA_Pais.getValueAt(TABELA_Pais.getSelectedRow(), 0).toString());
+            nomePais.setEnabled(true);
             txtNomeEstado_.setText("");
             txtNomeCidade_.setText("");
             txtNomeVizinhanca_.setText("");
@@ -1368,12 +1394,12 @@ public class Localizacao extends javax.swing.JFrame {
         //pega a cidade selecionada e exibe no campo de texto NOME que esta desabilitado
         if (combo_cidades_.getSelectedItem() != null) {
             String cidade = combo_cidades_.getSelectedItem().toString();
-            if(!cidade.equals("Selecione")){
+            if (!cidade.equals("Selecione")) {
                 txtNomeCidade_.setText(cidade);
-            }else{
+            } else {
                 txtNomeCidade_.setText("");
             }
-            
+
         }
     }//GEN-LAST:event_combo_cidades_ItemStateChanged
 

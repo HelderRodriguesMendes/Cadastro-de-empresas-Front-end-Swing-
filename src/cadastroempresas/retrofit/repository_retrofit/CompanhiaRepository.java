@@ -9,6 +9,8 @@ import model.Company;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
+import retrofit2.http.Path;
 
 /**
  *
@@ -18,4 +20,7 @@ public interface CompanhiaRepository {
     
     @POST("/company/cadastrar")
     Call<Boolean> salvar(@Body Company company);
+    
+    @PUT("/company/alterar/{id}")
+    Call<Boolean> alterar(@Path("id") Long id, @Body Company company);
 }
