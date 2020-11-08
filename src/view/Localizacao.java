@@ -1164,7 +1164,7 @@ public class Localizacao extends javax.swing.JFrame {
                 }
 
                 CityRepository cityRepository = retrofit.BaseURL().create(CityRepository.class);
-                Call<List<City>> callState = cityRepository.getCitysCadastrados(txtNomeEstado_.getText());
+                Call<List<City>> callState = cityRepository.getCitysCadastrados_state(txtNomeEstado_.getText());
                 callState.enqueue(new Callback<List<City>>() {
                     @Override
                     public void onResponse(Call<List<City>> call, Response<List<City>> rspns) {

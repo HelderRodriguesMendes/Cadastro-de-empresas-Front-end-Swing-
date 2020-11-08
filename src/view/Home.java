@@ -62,6 +62,7 @@ public class Home extends javax.swing.JFrame {
         jMenu2 = new javax.swing.JMenu();
         pesquisar_pais_ = new javax.swing.JMenuItem();
         pesquisar_estado_ = new javax.swing.JMenuItem();
+        pesquisar_cidade_ = new javax.swing.JMenuItem();
         jMenu3 = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
@@ -180,6 +181,14 @@ public class Home extends javax.swing.JFrame {
             }
         });
         jMenu2.add(pesquisar_estado_);
+
+        pesquisar_cidade_.setText("Cidade");
+        pesquisar_cidade_.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                pesquisar_cidade_ActionPerformed(evt);
+            }
+        });
+        jMenu2.add(pesquisar_cidade_);
 
         jMenuBar1.add(jMenu2);
 
@@ -307,6 +316,15 @@ public class Home extends javax.swing.JFrame {
         this.setVisible(false);
     }//GEN-LAST:event_pesquisar_estado_ActionPerformed
 
+    private void pesquisar_cidade_ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pesquisar_cidade_ActionPerformed
+        Consultas c = new Consultas();
+        c.statusForm("cidade");
+        c.setTitle("Consultar Cidade");
+        c.getCidades();
+        c.setVisible(true);
+        this.setVisible(false);
+    }//GEN-LAST:event_pesquisar_cidade_ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -359,6 +377,7 @@ public class Home extends javax.swing.JFrame {
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JMenu menu_pesquisar_Alterar;
+    private javax.swing.JMenuItem pesquisar_cidade_;
     private javax.swing.JMenuItem pesquisar_estado_;
     private javax.swing.JMenuItem pesquisar_pais_;
     // End of variables declaration//GEN-END:variables

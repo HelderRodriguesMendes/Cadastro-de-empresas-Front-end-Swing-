@@ -5,6 +5,7 @@
  */
 package view;
 
+import cadastroempresas.retrofit.repository_retrofit.CityRepository;
 import cadastroempresas.retrofit.repository_retrofit.StateRepository;
 import cadastroempresas.retrofit.service_retrofit.Retrofit_URL;
 import java.awt.Color;
@@ -16,6 +17,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import model.City;
 import model.State;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -28,14 +30,15 @@ import retrofit2.Response;
 public class Consultas extends javax.swing.JFrame {
 
     static String entidadeUtilizada;
-    
+
     Retrofit_URL retrofit = new Retrofit_URL();
-    
+
     StateRepository BaseURL_estados = retrofit.BaseURL().create(StateRepository.class);
-    
+    CityRepository BaseURL_cidades = retrofit.BaseURL().create(CityRepository.class);
+
     public Consultas() {
         initComponents();
-        
+
         addWindowListener(new WindowAdapter() { // para confirna se deseja ralmente fechar a janela
             @Override
             public void windowClosing(WindowEvent we) {
@@ -56,16 +59,15 @@ public class Consultas extends javax.swing.JFrame {
     public void statusForm(String entidade) {
         entidadeUtilizada = entidade;
     }
-    
-    
-    public void getEstados(){      
+
+    public void getEstados() {
         Call<List<State>> callState = BaseURL_estados.getStatesCadastrados();
         callState.enqueue(new Callback<List<State>>() {
             @Override
             public void onResponse(Call<List<State>> call, Response<List<State>> rspns) {
                 if (rspns.isSuccessful()) {
                     List<State> states = rspns.body();
-                    listarTabela_states(states);
+                    listarTabela_estados(states);
                     callState.cancel();
                 }
             }
@@ -75,15 +77,15 @@ public class Consultas extends javax.swing.JFrame {
             }
         });
     }
-    
-    public void getEstados_name(String nome){      
+
+    public void getEstados_name(String nome) {
         Call<List<State>> callState = BaseURL_estados.getStatesCadastrados_name(nome);
         callState.enqueue(new Callback<List<State>>() {
             @Override
             public void onResponse(Call<List<State>> call, Response<List<State>> rspns) {
                 if (rspns.isSuccessful()) {
                     List<State> states = rspns.body();
-                    listarTabela_states(states);
+                    listarTabela_estados(states);
                     callState.cancel();
                 }
             }
@@ -93,17 +95,52 @@ public class Consultas extends javax.swing.JFrame {
             }
         });
     }
+
+    public void getCidades() {
+        Call<List<City>> callState = BaseURL_cidades.getCitysCadastrados();
+        callState.enqueue(new Callback<List<City>>() {
+            @Override
+            public void onResponse(Call<List<City>> call, Response<List<City>> rspns) {
+                if (rspns.isSuccessful()) {
+                    List<City> citys = rspns.body();
+                    listarTabela_cidades(citys);
+                    callState.cancel();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<City>> call, Throwable thrwbl) {
+            }
+        });
+    }
     
-    private void listarTabela_states(List<State> states) {
+    public void getCidades_name(String nome) {
+        Call<List<City>> callState = BaseURL_cidades.getCitysCadastrados_name(nome);
+        callState.enqueue(new Callback<List<City>>() {
+            @Override
+            public void onResponse(Call<List<City>> call, Response<List<City>> rspns) {
+                if (rspns.isSuccessful()) {
+                    List<City> citys = rspns.body();
+                    listarTabela_cidades(citys);
+                    callState.cancel();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<City>> call, Throwable thrwbl) {
+            }
+        });
+    }
+
+//---------------------------------------------------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------LISTAR TABELA-------------------------------------------------------------------------------------------
+    private void listarTabela_estados(List<State> states) {
         DefaultTableModel dtma = (DefaultTableModel) TABELA.getModel();
         dtma.setNumRows(0);
         TABELA.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        if(entidadeUtilizada.equals("estado")){
-            TABELA.getColumnModel().getColumn(1).setPreferredWidth(150);
-        }else{
-          TABELA.getColumnModel().getColumn(1).setPreferredWidth(150);  
-        }
- 
+        TABELA.getColumnModel().getColumn(1).setPreferredWidth(180);
+
         TABELA.getColumnModel().getColumn(0).setMinWidth(0); // OCULTA A COLUNA (ID) DA TABELA PARA NÃO APARECER PARA O USUARIO
         TABELA.getColumnModel().getColumn(0).setMaxWidth(0); // OCULTA A COLUNA (ID) DA TABELA PARA NÃO APARECER PARA O USUARIO
         states.forEach((s) -> {
@@ -113,9 +150,27 @@ public class Consultas extends javax.swing.JFrame {
             });
         });
         corLinhaTabelaAnuidade(TABELA);
-        TABELA.getTableHeader().setReorderingAllowed(false);      // BLOQUIA AS COLUNAS DA TABELA PARA NÃO MOVELAS DO LUGAR
+        TABELA.getTableHeader().setReorderingAllowed(false);
     }
-    
+
+    private void listarTabela_cidades(List<City> citys) {
+        DefaultTableModel dtma = (DefaultTableModel) TABELA.getModel();
+        dtma.setNumRows(0);
+        TABELA.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        TABELA.getColumnModel().getColumn(1).setPreferredWidth(190);
+
+        TABELA.getColumnModel().getColumn(0).setMinWidth(0);
+        TABELA.getColumnModel().getColumn(0).setMaxWidth(0);
+        citys.forEach((s) -> {
+            dtma.addRow(new Object[]{
+                s.getId(),
+                s.getName()
+            });
+        });
+        corLinhaTabelaAnuidade(TABELA);
+        TABELA.getTableHeader().setReorderingAllowed(false);
+    }
+
     private void corLinhaTabelaAnuidade(JTable tabela) {
         tabela.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
             @Override
@@ -132,7 +187,7 @@ public class Consultas extends javax.swing.JFrame {
             }
         });
     }
-    
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -187,14 +242,14 @@ public class Consultas extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(58, 58, 58)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabel3)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jLabel2)
                         .addComponent(txtNome, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(38, Short.MAX_VALUE))
+                .addContainerGap(53, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -215,12 +270,20 @@ public class Consultas extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jLabel3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel3MouseClicked
-        if(entidadeUtilizada.equals("estado")){
-            if(!txtNome.getText().equals("")){
+        if (entidadeUtilizada.equals("estado")) {
+            if (!txtNome.getText().equals("")) {
                 getEstados_name(txtNome.getText());
+            }else{
+                getEstados();
             }
+        }else if (entidadeUtilizada.equals("cidade")) {
+            if (!txtNome.getText().equals("")) {
+                getCidades_name(txtNome.getText());
+            }else{
+                getCidades();
+            }            
         }
-        
+
     }//GEN-LAST:event_jLabel3MouseClicked
 
 
@@ -233,3 +296,4 @@ public class Consultas extends javax.swing.JFrame {
     private javax.swing.JTextField txtNome;
     // End of variables declaration//GEN-END:variables
 }
+
