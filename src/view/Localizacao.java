@@ -132,7 +132,7 @@ public class Localizacao extends javax.swing.JFrame {
 
             if (entidadeUtilizada.equals("pais")) {
                 btnPais_.setText("Alterar");
-                nomePais.setEnabled(false);
+                txt_nomePais.setEnabled(false);
             } else {
                 btnPais_.setText("Avançar");
             }
@@ -152,17 +152,22 @@ public class Localizacao extends javax.swing.JFrame {
 
             if (entidadeUtilizada.equals("vizinhanca")) {
                 btnVizinhanca_.setText("Alterar");
-                nomePais.setEnabled(false);
+                txt_nomePais.setEnabled(false);
                 btn_TODOS_ESTADOS_.setVisible(false);
                 btn_TODAS_CIDADES_.setVisible(false);
             } else {
                 btnVizinhanca_.setText("Finalizar");
             }
+        } else {
+            lblNome_Pais.setVisible(false);
+            jLabel28.setVisible(false);
+            txt_nomePais.setVisible(false);
+            btnPais_.setVisible(false);
         }
 
         //configura os campus de acordo se o pais informado for o Brasil ou nao
         if (form == 1) {
-            if (!nomePais.getText().equals("Brasil")) {
+            if (!txt_nomePais.getText().equals("Brasil")) {
                 combo_estados_.setVisible(false);
                 lblNomeCombo_estados.setVisible(false);
                 jLabel26.setVisible(false);
@@ -170,7 +175,7 @@ public class Localizacao extends javax.swing.JFrame {
                 txtNomeEstado_.setEnabled(false);
             }
         } else if (form == 2) {
-            if (!nomePais.getText().equals("Brasil")) {
+            if (!txt_nomePais.getText().equals("Brasil")) {
                 combo_cidades_.setVisible(false);
                 lblNomeCombo_cidades.setVisible(false);
                 jLabel25.setVisible(false);
@@ -213,7 +218,7 @@ public class Localizacao extends javax.swing.JFrame {
 
     private Neighborhood preencherObjetoNeighborhood() {
         country.setId(id_SelecionadoNaTabela_pais);
-        country.setName(nomePais.getText());
+        country.setName(txt_nomePais.getText());
 
         state.setId(id_SelecionadoNaTabela_estado);
         state.setName(txtNomeEstado_.getText());
@@ -247,7 +252,7 @@ public class Localizacao extends javax.swing.JFrame {
         state = company.getState();
         country = company.getCountry();
 
-        nomePais.setText(country.getName());
+        txt_nomePais.setText(country.getName());
         id_SelecionadoNaTabela_pais = country.getId();
 
         txtNomeEstado_.setText(state.getName());
@@ -370,8 +375,8 @@ public class Localizacao extends javax.swing.JFrame {
 
         FORM_GUIAS = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
-        nomePais = new javax.swing.JTextField();
+        lblNome_Pais = new javax.swing.JLabel();
+        txt_nomePais = new javax.swing.JTextField();
         btnPais_ = new javax.swing.JButton();
         jScrollPane4 = new javax.swing.JScrollPane();
         TABELA_Pais = new javax.swing.JTable();
@@ -416,11 +421,11 @@ public class Localizacao extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setType(java.awt.Window.Type.UTILITY);
 
-        jLabel1.setText("Nome:");
+        lblNome_Pais.setText("Nome:");
 
-        nomePais.addKeyListener(new java.awt.event.KeyAdapter() {
+        txt_nomePais.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
-                nomePaisKeyPressed(evt);
+                txt_nomePaisKeyPressed(evt);
             }
         });
 
@@ -487,12 +492,12 @@ public class Localizacao extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(jPanel1Layout.createSequentialGroup()
-                            .addComponent(jLabel1)
+                            .addComponent(lblNome_Pais)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                             .addComponent(jLabel28))
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(btnPais_)
-                            .addComponent(nomePais, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(txt_nomePais, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(txtPesquisarPais, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -509,10 +514,10 @@ public class Localizacao extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel1)
+                    .addComponent(lblNome_Pais)
                     .addComponent(jLabel28, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(nomePais, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(txt_nomePais, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnPais_)
                 .addGap(28, 28, 28)
@@ -930,12 +935,15 @@ public class Localizacao extends javax.swing.JFrame {
 
     private void btnPais_ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPais_ActionPerformed
 
-        if (nomePais.getText().equals("")) {
+        if (txt_nomePais.getText().equals("")) {
             JOptionPane.showMessageDialog(Localizacao.this, "Informe o país");
-            nomePais.requestFocus();
-        } else if (entidadeUtilizada.equals("pais")) {
+            txt_nomePais.requestFocus();
+        } else if(txt_nomePais.getText().length() < 2 || txt_nomePais.getText().length() > 30){
+            JOptionPane.showMessageDialog(Localizacao.this, "O Nome do País deve conter entre 2 a 30 caracteres", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
+            txt_nomePais.requestFocus();
+        }else if (entidadeUtilizada.equals("pais")) {
             country.setId(id_SelecionadoNaTabela_pais);
-            country.setName(nomePais.getText());
+            country.setName(txt_nomePais.getText());
 
             CountryRepository BaseURL = retrofit.BaseURL().create(CountryRepository.class);
             //salvar pais 
@@ -986,7 +994,7 @@ public class Localizacao extends javax.swing.JFrame {
             }
 
         } else {
-            if (!nomePais.getText().equals("Brasil")) {
+            if (!txt_nomePais.getText().equals("Brasil")) {
                 lblNomeCombo_estados.setVisible(false);
                 combo_estados_.setVisible(false);
                 btn_TODOS_ESTADOS_.setVisible(false);
@@ -994,7 +1002,7 @@ public class Localizacao extends javax.swing.JFrame {
                 btn_TODOS_ESTADOS_.setVisible(true);
             }
             StateRepository stateRepository = retrofit.BaseURL().create(StateRepository.class);
-            Call<List<State>> callState = stateRepository.getStatesCadastrados(nomePais.getText());
+            Call<List<State>> callState = stateRepository.getStatesCadastrados_Country(txt_nomePais.getText());
             callState.enqueue(new Callback<List<State>>() {
                 @Override
                 public void onResponse(Call<List<State>> call, Response<List<State>> rspns) {
@@ -1004,11 +1012,11 @@ public class Localizacao extends javax.swing.JFrame {
                         callState.cancel();
 
                         //ALTERANDO SEM SER DO BRASIL
-                        if (status_Form.equals("alterar") && !nomePais.getText().equals("Brasil")) {
+                        if (status_Form.equals("alterar") && !txt_nomePais.getText().equals("Brasil")) {
                             selecionar_guia(FORM_GUIAS.getSelectedIndex() + 1);
 
                             //ALTERANDO VIZINHANCA QUE É DO BRASIL                                
-                        } else if (status_Form.equals("alterar") && nomePais.getText().equals("Brasil") && entidadeUtilizada.equals("vizinhanca")) {
+                        } else if (status_Form.equals("alterar") && txt_nomePais.getText().equals("Brasil") && entidadeUtilizada.equals("vizinhanca")) {
                             selecionar_guia(FORM_GUIAS.getSelectedIndex() + 1);
                         } else if (status_Form.equals("alterar")) {
                             JOptionPane.showMessageDialog(Localizacao.this, "Não é permitido alterar Estados ou Cidades do Brasil", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
@@ -1057,25 +1065,28 @@ public class Localizacao extends javax.swing.JFrame {
     private void btnEstado_ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEstado_ActionPerformed
 
         //verifica se o pais foi informado, porque o estado depende do pais no cadastro
-        if (nomePais.getText().equals("") && id_SelecionadoNaTabela_pais == null) {
-            JOptionPane.showMessageDialog(Localizacao.this, "Informe o país deste estado", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
-            nomePais.requestFocus();
+        if (txt_nomePais.getText().equals("") && id_SelecionadoNaTabela_pais == null) {
+            JOptionPane.showMessageDialog(Localizacao.this, "Informe o País deste Estado", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
+            txt_nomePais.requestFocus();
 
             //volta para a aba de pais, para o mesmo ser informado
             selecionar_guia(this.FORM_GUIAS.getSelectedIndex() - 1);
 
             //se estiver cadastrando apenas o estado
         } else if (entidadeUtilizada.equals("estado")) {
-            if (txtNomeEstado_.getText().equals("") && combo_estados_.getSelectedItem().equals("Selecione") && nomePais.getText().equals("Brasil")) {
-                JOptionPane.showMessageDialog(Localizacao.this, "Informe o estado", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
+            if (txtNomeEstado_.getText().equals("") && combo_estados_.getSelectedItem().equals("Selecione") && txt_nomePais.getText().equals("Brasil")) {
+                JOptionPane.showMessageDialog(Localizacao.this, "Informe o Estado", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
                 txtNomeEstado_.requestFocus();
 
             } else if (txtNomeEstado_.getText().equals("")) {
-                JOptionPane.showMessageDialog(Localizacao.this, "Informe o estado", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(Localizacao.this, "Informe o Estado", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
+                txtNomeEstado_.requestFocus();
+            } else if (txtNomeEstado_.getText().length() < 2 || txtNomeEstado_.getText().length() > 30) {
+                JOptionPane.showMessageDialog(Localizacao.this, "O Nome do Estado deve conter entre 2 a 30 caracteres", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
                 txtNomeEstado_.requestFocus();
             } else {
                 country.setId(id_SelecionadoNaTabela_pais);
-                country.setName(nomePais.getText());
+                country.setName(txt_nomePais.getText());
 
                 state.setId(id_SelecionadoNaTabela_estado);
                 state.setName(txtNomeEstado_.getText());
@@ -1131,7 +1142,7 @@ public class Localizacao extends javax.swing.JFrame {
         } else {
 
             //valçidações para cadastramento de dados com o pais: Brasil
-            if (txtNomeEstado_.getText().equals("") && combo_estados_.getSelectedItem().equals("Selecione") && nomePais.getText().equals("Brasil")) {
+            if (txtNomeEstado_.getText().equals("") && combo_estados_.getSelectedItem().equals("Selecione") && txt_nomePais.getText().equals("Brasil")) {
                 JOptionPane.showMessageDialog(Localizacao.this, "Informe o estado", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
                 txtNomeEstado_.requestFocus();
 
@@ -1139,7 +1150,7 @@ public class Localizacao extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(Localizacao.this, "Informe o estado", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
                 txtNomeEstado_.requestFocus();
             } else {
-                if (!nomePais.getText().equals("Brasil")) {
+                if (!txt_nomePais.getText().equals("Brasil")) {
                     lblNomeCombo_cidades.setVisible(false);
                     combo_cidades_.setVisible(false);
                     btn_TODAS_CIDADES_.setVisible(false);
@@ -1157,7 +1168,7 @@ public class Localizacao extends javax.swing.JFrame {
                             selecionar_guia(FORM_GUIAS.getSelectedIndex() + 1);
                             combo_estados_.setVisible(true);
                             lblNomeCombo_estados.setVisible(true);
-                            nomePais.setEnabled(false);
+                            txt_nomePais.setEnabled(false);
                         }
                     }
 
@@ -1222,9 +1233,9 @@ public class Localizacao extends javax.swing.JFrame {
     private void TABELA_PaisMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TABELA_PaisMouseClicked
         //se estiver cadastrando um pais e clica em um pais ja cadastrado que esta na tabela, o nome desse pais nao ira para o campu de cadastramento
         if (!(status_Form.equals("cadastrar") && entidadeUtilizada.equals("pais"))) {
-            nomePais.setText(TABELA_Pais.getValueAt(TABELA_Pais.getSelectedRow(), 1).toString());
+            txt_nomePais.setText(TABELA_Pais.getValueAt(TABELA_Pais.getSelectedRow(), 1).toString());
             id_SelecionadoNaTabela_pais = Long.parseLong(TABELA_Pais.getValueAt(TABELA_Pais.getSelectedRow(), 0).toString());
-            nomePais.setEnabled(true);
+            txt_nomePais.setEnabled(true);
             txtNomeEstado_.setText("");
             txtNomeCidade_.setText("");
             txtNomeVizinhanca_.setText("");
@@ -1246,14 +1257,14 @@ public class Localizacao extends javax.swing.JFrame {
     }//GEN-LAST:event_TABELA_EstadosMouseClicked
 
     private void btn_TODOS_ESTADOS_ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_TODOS_ESTADOS_ActionPerformed
-        if (nomePais.getText().equals("")) {
+        if (txt_nomePais.getText().equals("")) {
             JOptionPane.showMessageDialog(Localizacao.this, "Informe o país deste estado", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
-            nomePais.requestFocus();
+            txt_nomePais.requestFocus();
 
             //volta para a aba de pais, para o mesmo ser informado
             selecionar_guia(this.FORM_GUIAS.getSelectedIndex() - 1);
 
-        } else if (nomePais.getText().equals("Brasil")) {
+        } else if (txt_nomePais.getText().equals("Brasil")) {
             lblNomeCombo_estados.setVisible(true);
             combo_estados_.setVisible(true);
             jLabel26.setVisible(true);
@@ -1298,22 +1309,28 @@ public class Localizacao extends javax.swing.JFrame {
         //verifica se o pais foi informado, porque o estado depende do pais no cadastro
         if (txtNomeEstado_.getText().equals("")) {
             JOptionPane.showMessageDialog(Localizacao.this, "Informe o estado desta cidade", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
-            nomePais.requestFocus();
+            txt_nomePais.requestFocus();
 
             //volta para a aba de pais, para o mesmo ser informado
             selecionar_guia(this.FORM_GUIAS.getSelectedIndex() - 1);
 
             //se estiver cadastrando apenas a cidade
         } else if (entidadeUtilizada.equals("cidade")) {
-            if (txtNomeCidade_.getText().equals("") && combo_cidades_.getSelectedItem().equals("Selecione") && nomePais.getText().equals("Brasil")) {
+            if (txtNomeCidade_.getText().equals("") && combo_cidades_.getSelectedItem().equals("Selecione") && txt_nomePais.getText().equals("Brasil")) {
                 JOptionPane.showMessageDialog(Localizacao.this, "Informe a cidade", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
                 txtNomeCidade_.requestFocus();
+
             } else if (txtNomeCidade_.getText().equals("")) {
                 JOptionPane.showMessageDialog(Localizacao.this, "Informe a cidade", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
                 txtNomeCidade_.requestFocus();
+
+            } else if (txtNomeCidade_.getText().length() < 2 || txtNomeCidade_.getText().length() > 30) {
+                JOptionPane.showMessageDialog(Localizacao.this, "O Nome da Cidade deve conter entre 2 a 30 caracteres", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
+                txtNomeVizinhanca_.requestFocus();
+
             } else {
                 country.setId(id_SelecionadoNaTabela_pais);
-                country.setName(nomePais.getText());
+                country.setName(txt_nomePais.getText());
 
                 state.setId(id_SelecionadoNaTabela_estado);
                 state.setName(txtNomeEstado_.getText());
@@ -1370,7 +1387,7 @@ public class Localizacao extends javax.swing.JFrame {
             }
             //se estiver cadastrando vizinhanca
         } else {
-            if (txtNomeCidade_.getText().equals("") && combo_cidades_.getSelectedItem().equals("Selecione") && nomePais.getText().equals("Brasil")) {
+            if (txtNomeCidade_.getText().equals("") && combo_cidades_.getSelectedItem().equals("Selecione") && txt_nomePais.getText().equals("Brasil")) {
                 JOptionPane.showMessageDialog(Localizacao.this, "Informe a cidade", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
                 txtNomeCidade_.requestFocus();
             } else if (txtNomeCidade_.getText().equals("")) {
@@ -1401,12 +1418,12 @@ public class Localizacao extends javax.swing.JFrame {
     private void btn_TODAS_CIDADES_ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_TODAS_CIDADES_ActionPerformed
         if (txtNomeEstado_.getText().equals("")) {
             JOptionPane.showMessageDialog(Localizacao.this, "Informe o estado desta cidade", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
-            nomePais.requestFocus();
+            txt_nomePais.requestFocus();
 
             //volta para a aba de pais, para o mesmo ser informado
             selecionar_guia(this.FORM_GUIAS.getSelectedIndex() - 1);
 
-        } else if (nomePais.getText().equals("Brasil")) {
+        } else if (txt_nomePais.getText().equals("Brasil")) {
             lblNomeCombo_cidades.setVisible(true);
             combo_cidades_.setVisible(true);
             jLabel25.setVisible(true);
@@ -1468,7 +1485,7 @@ public class Localizacao extends javax.swing.JFrame {
         //verifica se o pais foi informado, porque o estado depende do pais no cadastro
         if (txtNomeCidade_.getText().equals("")) {
             JOptionPane.showMessageDialog(Localizacao.this, "Informe a cidade desta vizinhança", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
-            nomePais.requestFocus();
+            txt_nomePais.requestFocus();
 
             //volta para a aba de pais, para o mesmo ser informado
             selecionar_guia(this.FORM_GUIAS.getSelectedIndex() - 1);
@@ -1476,6 +1493,9 @@ public class Localizacao extends javax.swing.JFrame {
         } else if (txtNomeVizinhanca_.getText().equals("")) {
             JOptionPane.showMessageDialog(Localizacao.this, "Informe a vizinhança", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
             txtNomeCidade_.requestFocus();
+        } else if (txtNomeVizinhanca_.getText().length() < 2 || txtNomeVizinhanca_.getText().length() > 30) {
+            JOptionPane.showMessageDialog(Localizacao.this, "O Nome da Vizinhança deve conter entre 2 a 30 caracteres", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
+            txtNomeVizinhanca_.requestFocus();
         } else if (entidadeUtilizada.equals("vizinhanca")) {
 
             NeighborhoodRepository BaseURL = retrofit.BaseURL().create(NeighborhoodRepository.class);
@@ -1555,11 +1575,11 @@ public class Localizacao extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_TABELA_vizinhancaMouseClicked
 
-    private void nomePaisKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_nomePaisKeyPressed
+    private void txt_nomePaisKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txt_nomePaisKeyPressed
         txtNomeEstado_.setText("");
         txtNomeCidade_.setText("");
         txtNomeVizinhanca_.setText("");
-    }//GEN-LAST:event_nomePaisKeyPressed
+    }//GEN-LAST:event_txt_nomePaisKeyPressed
 
     private void txtNomeEstado_KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtNomeEstado_KeyPressed
         txtNomeCidade_.setText("");
@@ -1588,7 +1608,6 @@ public class Localizacao extends javax.swing.JFrame {
     private javax.swing.JButton btn_TODOS_ESTADOS_;
     private javax.swing.JComboBox<String> combo_cidades_;
     private javax.swing.JComboBox combo_estados_;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
@@ -1613,11 +1632,12 @@ public class Localizacao extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JLabel lblNomeCombo_cidades;
     private javax.swing.JLabel lblNomeCombo_estados;
+    private javax.swing.JLabel lblNome_Pais;
     private javax.swing.JLabel lblVoltar_;
-    private javax.swing.JTextField nomePais;
     private javax.swing.JTextField txtNomeCidade_;
     private javax.swing.JTextField txtNomeEstado_;
     private javax.swing.JTextField txtNomeVizinhanca_;
     private javax.swing.JTextField txtPesquisarPais;
+    private javax.swing.JTextField txt_nomePais;
     // End of variables declaration//GEN-END:variables
 }

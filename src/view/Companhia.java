@@ -201,6 +201,9 @@ public class Companhia extends javax.swing.JFrame {
         }else if(txtTelefone.getText().length() < 2 || txtTelefone.getText().length() > 15){
             JOptionPane.showMessageDialog(Companhia.this, "O Endereço da Companhia deve conter entre 2 a 15 caracteres", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
             txtTelefone.requestFocus();
+        }else if(txtNumeroFiscal.getText().length() < 2 || txtNumeroFiscal.getText().length() > 30){
+            JOptionPane.showMessageDialog(Companhia.this, "O Número Fiscal Federal da Companhia deve conter entre 2 a 30 caracteres", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
+            txtTelefone.requestFocus();
         }else{
             ok = true;
         }
@@ -224,6 +227,7 @@ public class Companhia extends javax.swing.JFrame {
 
         if (status.equals("cadastrar")) {
             bloquiarCampus();
+            btn.setText("Cadastrar");
         }
     }
 

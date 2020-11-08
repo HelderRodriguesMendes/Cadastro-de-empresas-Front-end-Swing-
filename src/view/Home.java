@@ -60,6 +60,8 @@ public class Home extends javax.swing.JFrame {
         alterar_Cidade_ = new javax.swing.JMenuItem();
         alterar_Vizinhanca_ = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
+        pesquisar_pais_ = new javax.swing.JMenuItem();
+        pesquisar_estado_ = new javax.swing.JMenuItem();
         jMenu3 = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
@@ -149,6 +151,7 @@ public class Home extends javax.swing.JFrame {
         });
         menu_pesquisar_Alterar.add(alterar_Cidade_);
 
+        alterar_Vizinhanca_.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_V, java.awt.event.InputEvent.ALT_MASK | java.awt.event.InputEvent.SHIFT_MASK));
         alterar_Vizinhanca_.setText("Vizinhança");
         alterar_Vizinhanca_.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -160,6 +163,24 @@ public class Home extends javax.swing.JFrame {
         jMenuBar1.add(menu_pesquisar_Alterar);
 
         jMenu2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagens/menuPesquisar.png"))); // NOI18N
+
+        pesquisar_pais_.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_P, java.awt.event.InputEvent.SHIFT_MASK | java.awt.event.InputEvent.CTRL_MASK));
+        pesquisar_pais_.setText("País");
+        pesquisar_pais_.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                pesquisar_pais_ActionPerformed(evt);
+            }
+        });
+        jMenu2.add(pesquisar_pais_);
+
+        pesquisar_estado_.setText("Estado");
+        pesquisar_estado_.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                pesquisar_estado_ActionPerformed(evt);
+            }
+        });
+        jMenu2.add(pesquisar_estado_);
+
         jMenuBar1.add(jMenu2);
 
         jMenu3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagens/ESCLUIR 2.png"))); // NOI18N
@@ -268,6 +289,24 @@ public class Home extends javax.swing.JFrame {
         this.setVisible(false);
     }//GEN-LAST:event_alterar_Vizinhanca_ActionPerformed
 
+    private void pesquisar_pais_ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pesquisar_pais_ActionPerformed
+        Localizacao l = new Localizacao();
+        l.statusForm("consultar", "pais");
+        l.selecionar_guia(0);
+        l.setTitle("Cadastrar País");
+        l.setVisible(true);
+        this.setVisible(false);
+    }//GEN-LAST:event_pesquisar_pais_ActionPerformed
+
+    private void pesquisar_estado_ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pesquisar_estado_ActionPerformed
+        Consultas c = new Consultas();
+        c.statusForm("estado");
+        c.setTitle("Consultar Estado");
+        c.getEstados();
+        c.setVisible(true);
+        this.setVisible(false);
+    }//GEN-LAST:event_pesquisar_estado_ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -320,5 +359,7 @@ public class Home extends javax.swing.JFrame {
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JMenu menu_pesquisar_Alterar;
+    private javax.swing.JMenuItem pesquisar_estado_;
+    private javax.swing.JMenuItem pesquisar_pais_;
     // End of variables declaration//GEN-END:variables
 }

@@ -23,11 +23,17 @@ import retrofit2.http.Query;
 public interface StateRepository {
     
     @GET("/state/findAllStateCountry/name?")
-    Call<List<State>> getStatesCadastrados(@Query("name") String name);
+    Call<List<State>> getStatesCadastrados_Country(@Query("name") String name);
     
     @POST("/state/cadastrar")
     Call<Boolean> salvar(@Body State state);
     
     @PUT("/state/alterar/{id}")
     Call<Boolean> alterar(@Path("id") Long id, @Body State state);
+    
+    @GET("/state/findAllState")
+    Call<List<State>> getStatesCadastrados();
+    
+    @GET("/state/findAllState/name")
+    Call<List<State>> getStatesCadastrados_name(@Query("name") String name);
 }
