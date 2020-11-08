@@ -63,6 +63,7 @@ public class Home extends javax.swing.JFrame {
         pesquisar_pais_ = new javax.swing.JMenuItem();
         pesquisar_estado_ = new javax.swing.JMenuItem();
         pesquisar_cidade_ = new javax.swing.JMenuItem();
+        pesquisar_vizinhanca_ = new javax.swing.JMenuItem();
         jMenu3 = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
@@ -189,6 +190,14 @@ public class Home extends javax.swing.JFrame {
             }
         });
         jMenu2.add(pesquisar_cidade_);
+
+        pesquisar_vizinhanca_.setText("Vizinhança");
+        pesquisar_vizinhanca_.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                pesquisar_vizinhanca_ActionPerformed(evt);
+            }
+        });
+        jMenu2.add(pesquisar_vizinhanca_);
 
         jMenuBar1.add(jMenu2);
 
@@ -325,6 +334,15 @@ public class Home extends javax.swing.JFrame {
         this.setVisible(false);
     }//GEN-LAST:event_pesquisar_cidade_ActionPerformed
 
+    private void pesquisar_vizinhanca_ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pesquisar_vizinhanca_ActionPerformed
+        Consultas c = new Consultas();
+        c.statusForm("vizinhanca");
+        c.setTitle("Consultar Vizinhança");
+        c.getVizinhancas();
+        c.setVisible(true);
+        this.setVisible(false);
+    }//GEN-LAST:event_pesquisar_vizinhanca_ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -380,5 +398,6 @@ public class Home extends javax.swing.JFrame {
     private javax.swing.JMenuItem pesquisar_cidade_;
     private javax.swing.JMenuItem pesquisar_estado_;
     private javax.swing.JMenuItem pesquisar_pais_;
+    private javax.swing.JMenuItem pesquisar_vizinhanca_;
     // End of variables declaration//GEN-END:variables
 }

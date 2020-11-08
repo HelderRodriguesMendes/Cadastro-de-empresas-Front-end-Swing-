@@ -6,6 +6,7 @@
 package view;
 
 import cadastroempresas.retrofit.repository_retrofit.CityRepository;
+import cadastroempresas.retrofit.repository_retrofit.NeighborhoodRepository;
 import cadastroempresas.retrofit.repository_retrofit.StateRepository;
 import cadastroempresas.retrofit.service_retrofit.Retrofit_URL;
 import java.awt.Color;
@@ -18,6 +19,7 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import model.City;
+import model.Neighborhood;
 import model.State;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -35,6 +37,7 @@ public class Consultas extends javax.swing.JFrame {
 
     StateRepository BaseURL_estados = retrofit.BaseURL().create(StateRepository.class);
     CityRepository BaseURL_cidades = retrofit.BaseURL().create(CityRepository.class);
+    NeighborhoodRepository BaseURL_neighborhood = retrofit.BaseURL().create(NeighborhoodRepository.class);
 
     public Consultas() {
         initComponents();
@@ -97,14 +100,14 @@ public class Consultas extends javax.swing.JFrame {
     }
 
     public void getCidades() {
-        Call<List<City>> callState = BaseURL_cidades.getCitysCadastrados();
-        callState.enqueue(new Callback<List<City>>() {
+        Call<List<City>> callCity = BaseURL_cidades.getCitysCadastrados();
+        callCity.enqueue(new Callback<List<City>>() {
             @Override
             public void onResponse(Call<List<City>> call, Response<List<City>> rspns) {
                 if (rspns.isSuccessful()) {
                     List<City> citys = rspns.body();
                     listarTabela_cidades(citys);
-                    callState.cancel();
+                    callCity.cancel();
                 }
             }
 
@@ -115,19 +118,55 @@ public class Consultas extends javax.swing.JFrame {
     }
     
     public void getCidades_name(String nome) {
-        Call<List<City>> callState = BaseURL_cidades.getCitysCadastrados_name(nome);
-        callState.enqueue(new Callback<List<City>>() {
+        Call<List<City>> callCity = BaseURL_cidades.getCitysCadastrados_name(nome);
+        callCity.enqueue(new Callback<List<City>>() {
             @Override
             public void onResponse(Call<List<City>> call, Response<List<City>> rspns) {
                 if (rspns.isSuccessful()) {
                     List<City> citys = rspns.body();
                     listarTabela_cidades(citys);
-                    callState.cancel();
+                    callCity.cancel();
                 }
             }
 
             @Override
             public void onFailure(Call<List<City>> call, Throwable thrwbl) {
+            }
+        });
+    }
+    
+    public void getVizinhancas() {
+        Call<List<Neighborhood>> callState = BaseURL_neighborhood.getNeighborhoodCadastrados();
+        callState.enqueue(new Callback<List<Neighborhood>>() {
+            @Override
+            public void onResponse(Call<List<Neighborhood>> call, Response<List<Neighborhood>> rspns) {
+                if (rspns.isSuccessful()) {
+                    List<Neighborhood> neighborhoods = rspns.body();
+                    listarTabela_vizinhancas(neighborhoods);
+                    callState.cancel();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Neighborhood>> call, Throwable thrwbl) {
+            }
+        });
+    }
+    
+    public void getVizinhancas_name(String name) {
+        Call<List<Neighborhood>> callState = BaseURL_neighborhood.getNeighborhoodCadastrados_name(name);
+        callState.enqueue(new Callback<List<Neighborhood>>() {
+            @Override
+            public void onResponse(Call<List<Neighborhood>> call, Response<List<Neighborhood>> rspns) {
+                if (rspns.isSuccessful()) {
+                    List<Neighborhood> neighborhoods = rspns.body();
+                    listarTabela_vizinhancas(neighborhoods);
+                    callState.cancel();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Neighborhood>> call, Throwable thrwbl) {
             }
         });
     }
@@ -162,6 +201,24 @@ public class Consultas extends javax.swing.JFrame {
         TABELA.getColumnModel().getColumn(0).setMinWidth(0);
         TABELA.getColumnModel().getColumn(0).setMaxWidth(0);
         citys.forEach((s) -> {
+            dtma.addRow(new Object[]{
+                s.getId(),
+                s.getName()
+            });
+        });
+        corLinhaTabelaAnuidade(TABELA);
+        TABELA.getTableHeader().setReorderingAllowed(false);
+    }
+    
+    private void listarTabela_vizinhancas(List<Neighborhood> neighborhoods) {
+        DefaultTableModel dtma = (DefaultTableModel) TABELA.getModel();
+        dtma.setNumRows(0);
+        TABELA.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        TABELA.getColumnModel().getColumn(1).setPreferredWidth(190);
+
+        TABELA.getColumnModel().getColumn(0).setMinWidth(0);
+        TABELA.getColumnModel().getColumn(0).setMaxWidth(0);
+        neighborhoods.forEach((s) -> {
             dtma.addRow(new Object[]{
                 s.getId(),
                 s.getName()
@@ -282,7 +339,14 @@ public class Consultas extends javax.swing.JFrame {
             }else{
                 getCidades();
             }            
+        }else if (entidadeUtilizada.equals("vizinhanca")) {
+            if (!txtNome.getText().equals("")) {
+                getVizinhancas_name(txtNome.getText());
+            }else{
+                getVizinhancas();
+            }
         }
+
 
     }//GEN-LAST:event_jLabel3MouseClicked
 

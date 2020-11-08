@@ -21,15 +21,19 @@ import retrofit2.http.Query;
  * @author helde
  */
 public interface NeighborhoodRepository {
-    @GET("/neighborhood/findAllCityState/name?")
-    Call<List<Neighborhood>> getNeighborhoodCadastrados(@Query("name") String name);
-    
+
     @POST("/neighborhood/cadastrar")
     Call<Boolean> salvar(@Body Neighborhood neighborhood);
-    
+
     @GET("/neighborhood/findAllNeighborhoodNameCity/name?")
     Call<List<Neighborhood>> getNeighborhoodCadastradosFK(@Query("name") String name);
-    
+
     @PUT("/neighborhood/alterar/{id}")
     Call<Boolean> alterar(@Path("id") Long id, @Body Neighborhood neighborhood);
+
+    @GET("/neighborhood/findAllNeighborhood")
+    Call<List<Neighborhood>> getNeighborhoodCadastrados();
+    
+    @GET("/neighborhood/findAllNeighborhood/name")
+    Call<List<Neighborhood>> getNeighborhoodCadastrados_name(@Query("name") String name);
 }
