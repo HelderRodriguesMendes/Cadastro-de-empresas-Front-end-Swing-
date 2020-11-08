@@ -1009,10 +1009,9 @@ public class Localizacao extends javax.swing.JFrame {
                             selecionar_guia(FORM_GUIAS.getSelectedIndex() + 1);
                         } else if (status_Form.equals("alterar")) {
                             JOptionPane.showMessageDialog(Localizacao.this, "Não é permitido alterar Estados ou Cidades do Brasil", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
-                        }else if(status_Form.equals("cadastrar")){
+                        } else if (status_Form.equals("cadastrar")) {
                             selecionar_guia(FORM_GUIAS.getSelectedIndex() + 1);
                         }
-
                     }
                 }
 
@@ -1319,27 +1318,50 @@ public class Localizacao extends javax.swing.JFrame {
                 city.setName(txtNomeCidade_.getText());
                 city.setState(state);
 
-                //salvar cidade
                 CityRepository BaseURL = retrofit.BaseURL().create(CityRepository.class);
-                Call<Boolean> callState = BaseURL.salvar(city);
-                callState.enqueue(new Callback<Boolean>() {
-                    @Override
-                    public void onResponse(Call<Boolean> call, Response<Boolean> rspns) {
-                        if (rspns.isSuccessful()) {
-                            Boolean ok = rspns.body();
-                            if (ok) {
-                                JOptionPane.showMessageDialog(Localizacao.this, "Dados cadastrados com sucesso");
-                                Home h = new Home();
-                                h.habilitarForm();
-                                Localizacao.this.dispose();
+
+                //salvar cidade
+                if (status_Form.equals("cadastrar")) {
+                    Call<Boolean> callState = BaseURL.salvar(city);
+                    callState.enqueue(new Callback<Boolean>() {
+                        @Override
+                        public void onResponse(Call<Boolean> call, Response<Boolean> rspns) {
+                            if (rspns.isSuccessful()) {
+                                Boolean ok = rspns.body();
+                                if (ok) {
+                                    JOptionPane.showMessageDialog(Localizacao.this, "Dados cadastrados com sucesso");
+                                    Home h = new Home();
+                                    h.habilitarForm();
+                                    Localizacao.this.dispose();
+                                }
                             }
                         }
-                    }
 
-                    @Override
-                    public void onFailure(Call<Boolean> call, Throwable thrwbl) {
-                    }
-                });
+                        @Override
+                        public void onFailure(Call<Boolean> call, Throwable thrwbl) {
+                        }
+                    });
+                } else {
+                    Call<Boolean> callState = BaseURL.alterar(id_SelecionadoNaTabela_cidade, city);
+                    callState.enqueue(new Callback<Boolean>() {
+                        @Override
+                        public void onResponse(Call<Boolean> call, Response<Boolean> rspns) {
+                            if (rspns.isSuccessful()) {
+                                Boolean ok = rspns.body();
+                                if (ok) {
+                                    JOptionPane.showMessageDialog(Localizacao.this, "Dados alterados com sucesso");
+                                    Home h = new Home();
+                                    h.habilitarForm();
+                                    Localizacao.this.dispose();
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<Boolean> call, Throwable thrwbl) {
+                        }
+                    });
+                }
             }
             //se estiver cadastrando vizinhanca
         } else {
