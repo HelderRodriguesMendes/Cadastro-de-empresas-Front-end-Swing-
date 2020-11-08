@@ -6,6 +6,7 @@
 package view;
 
 import cadastroempresas.retrofit.repository_retrofit.CityRepository;
+import cadastroempresas.retrofit.repository_retrofit.CompanhiaRepository;
 import cadastroempresas.retrofit.repository_retrofit.NeighborhoodRepository;
 import cadastroempresas.retrofit.repository_retrofit.StateRepository;
 import cadastroempresas.retrofit.service_retrofit.Retrofit_URL;
@@ -19,6 +20,7 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import model.City;
+import model.Company;
 import model.Neighborhood;
 import model.State;
 import retrofit2.Call;
@@ -38,6 +40,7 @@ public class Consultas extends javax.swing.JFrame {
     StateRepository BaseURL_estados = retrofit.BaseURL().create(StateRepository.class);
     CityRepository BaseURL_cidades = retrofit.BaseURL().create(CityRepository.class);
     NeighborhoodRepository BaseURL_neighborhood = retrofit.BaseURL().create(NeighborhoodRepository.class);
+    CompanhiaRepository BaseURL_companhia = retrofit.BaseURL().create(CompanhiaRepository.class);
 
     public Consultas() {
         initComponents();
@@ -116,7 +119,7 @@ public class Consultas extends javax.swing.JFrame {
             }
         });
     }
-    
+
     public void getCidades_name(String nome) {
         Call<List<City>> callCity = BaseURL_cidades.getCitysCadastrados_name(nome);
         callCity.enqueue(new Callback<List<City>>() {
@@ -134,7 +137,7 @@ public class Consultas extends javax.swing.JFrame {
             }
         });
     }
-    
+
     public void getVizinhancas() {
         Call<List<Neighborhood>> callState = BaseURL_neighborhood.getNeighborhoodCadastrados();
         callState.enqueue(new Callback<List<Neighborhood>>() {
@@ -152,7 +155,7 @@ public class Consultas extends javax.swing.JFrame {
             }
         });
     }
-    
+
     public void getVizinhancas_name(String name) {
         Call<List<Neighborhood>> callState = BaseURL_neighborhood.getNeighborhoodCadastrados_name(name);
         callState.enqueue(new Callback<List<Neighborhood>>() {
@@ -171,9 +174,45 @@ public class Consultas extends javax.swing.JFrame {
         });
     }
 
+    public void getCompanhias() {
+        Call<List<Company>> callState = BaseURL_companhia.getCompanys();
+        callState.enqueue(new Callback<List<Company>>() {
+            @Override
+            public void onResponse(Call<List<Company>> call, Response<List<Company>> rspns) {
+                if (rspns.isSuccessful()) {
+                    List<Company> companys = rspns.body();
+                    listarTabela_companhia(companys);
+                    callState.cancel();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Company>> call, Throwable thrwbl) {
+            }
+        });
+    }
+
+    public void getCompanhias_name(String name) {
+        Call<List<Company>> callState = BaseURL_companhia.getCompanys_name(name);
+        callState.enqueue(new Callback<List<Company>>() {
+            @Override
+            public void onResponse(Call<List<Company>> call, Response<List<Company>> rspns) {
+                if (rspns.isSuccessful()) {
+                    List<Company> companys = rspns.body();
+                    listarTabela_companhia(companys);
+                    callState.cancel();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Company>> call, Throwable thrwbl) {
+            }
+        });
+    }
 //---------------------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------------------
 //-------------------------------------LISTAR TABELA-------------------------------------------------------------------------------------------
+
     private void listarTabela_estados(List<State> states) {
         DefaultTableModel dtma = (DefaultTableModel) TABELA.getModel();
         dtma.setNumRows(0);
@@ -209,7 +248,7 @@ public class Consultas extends javax.swing.JFrame {
         corLinhaTabelaAnuidade(TABELA);
         TABELA.getTableHeader().setReorderingAllowed(false);
     }
-    
+
     private void listarTabela_vizinhancas(List<Neighborhood> neighborhoods) {
         DefaultTableModel dtma = (DefaultTableModel) TABELA.getModel();
         dtma.setNumRows(0);
@@ -222,6 +261,24 @@ public class Consultas extends javax.swing.JFrame {
             dtma.addRow(new Object[]{
                 s.getId(),
                 s.getName()
+            });
+        });
+        corLinhaTabelaAnuidade(TABELA);
+        TABELA.getTableHeader().setReorderingAllowed(false);
+    }
+
+    private void listarTabela_companhia(List<Company> companys) {
+        DefaultTableModel dtma = (DefaultTableModel) TABELA.getModel();
+        dtma.setNumRows(0);
+        TABELA.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        TABELA.getColumnModel().getColumn(1).setPreferredWidth(190);
+
+        TABELA.getColumnModel().getColumn(0).setMinWidth(0);
+        TABELA.getColumnModel().getColumn(0).setMaxWidth(0);
+        companys.forEach((s) -> {
+            dtma.addRow(new Object[]{
+                s.getId(),
+                s.getCorporateName()
             });
         });
         corLinhaTabelaAnuidade(TABELA);
@@ -327,24 +384,33 @@ public class Consultas extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jLabel3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel3MouseClicked
-        if (entidadeUtilizada.equals("estado")) {
-            if (!txtNome.getText().equals("")) {
-                getEstados_name(txtNome.getText());
-            }else{
-                getEstados();
-            }
-        }else if (entidadeUtilizada.equals("cidade")) {
-            if (!txtNome.getText().equals("")) {
-                getCidades_name(txtNome.getText());
-            }else{
-                getCidades();
-            }            
-        }else if (entidadeUtilizada.equals("vizinhanca")) {
-            if (!txtNome.getText().equals("")) {
-                getVizinhancas_name(txtNome.getText());
-            }else{
-                getVizinhancas();
-            }
+        switch (entidadeUtilizada) {
+            case "estado":
+                if (!txtNome.getText().equals("")) {
+                    getEstados_name(txtNome.getText());
+                } else {
+                    getEstados();
+                }   break;
+            case "cidade":
+                if (!txtNome.getText().equals("")) {
+                    getCidades_name(txtNome.getText());
+                } else {
+                    getCidades();
+                }   break;
+            case "vizinhanca":
+                if (!txtNome.getText().equals("")) {
+                    getVizinhancas_name(txtNome.getText());
+                } else {
+                    getVizinhancas();
+                }   break;
+            case "companhia":
+                if (!txtNome.getText().equals("")) {
+                    getCompanhias_name(txtNome.getText());
+                }else{
+                    getCompanhias();
+                }   break;
+            default:
+                break;
         }
 
 
@@ -360,4 +426,3 @@ public class Consultas extends javax.swing.JFrame {
     private javax.swing.JTextField txtNome;
     // End of variables declaration//GEN-END:variables
 }
-

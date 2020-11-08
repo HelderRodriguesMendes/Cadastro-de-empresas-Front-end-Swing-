@@ -64,6 +64,7 @@ public class Home extends javax.swing.JFrame {
         pesquisar_estado_ = new javax.swing.JMenuItem();
         pesquisar_cidade_ = new javax.swing.JMenuItem();
         pesquisar_vizinhanca_ = new javax.swing.JMenuItem();
+        pesquisar_companhia_ = new javax.swing.JMenuItem();
         jMenu3 = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
@@ -198,6 +199,14 @@ public class Home extends javax.swing.JFrame {
             }
         });
         jMenu2.add(pesquisar_vizinhanca_);
+
+        pesquisar_companhia_.setText("Companhia");
+        pesquisar_companhia_.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                pesquisar_companhia_ActionPerformed(evt);
+            }
+        });
+        jMenu2.add(pesquisar_companhia_);
 
         jMenuBar1.add(jMenu2);
 
@@ -343,6 +352,15 @@ public class Home extends javax.swing.JFrame {
         this.setVisible(false);
     }//GEN-LAST:event_pesquisar_vizinhanca_ActionPerformed
 
+    private void pesquisar_companhia_ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pesquisar_companhia_ActionPerformed
+        Consultas c = new Consultas();
+        c.statusForm("companhia");
+        c.setTitle("Consultar Companhia");
+        c.getCompanhias();
+        c.setVisible(true);
+        this.setVisible(false);
+    }//GEN-LAST:event_pesquisar_companhia_ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -396,6 +414,7 @@ public class Home extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JMenu menu_pesquisar_Alterar;
     private javax.swing.JMenuItem pesquisar_cidade_;
+    private javax.swing.JMenuItem pesquisar_companhia_;
     private javax.swing.JMenuItem pesquisar_estado_;
     private javax.swing.JMenuItem pesquisar_pais_;
     private javax.swing.JMenuItem pesquisar_vizinhanca_;
