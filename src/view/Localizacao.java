@@ -139,6 +139,7 @@ public class Localizacao extends javax.swing.JFrame {
 
             if (entidadeUtilizada.equals("estado")) {
                 btnEstado_.setText("Alterar");
+                txtNomeEstado_.setEnabled(false);
             } else {
                 btnEstado_.setText("Avançar");
             }
@@ -998,7 +999,20 @@ public class Localizacao extends javax.swing.JFrame {
                         List<State> state = rspns.body();
                         listarTabelaEstadosCadastrados(state);
                         callState.cancel();
-                        selecionar_guia(FORM_GUIAS.getSelectedIndex() + 1);
+
+                        //ALTERANDO SEM SER DO BRASIL
+                        if (status_Form.equals("alterar") && !nomePais.getText().equals("Brasil")) {
+                            selecionar_guia(FORM_GUIAS.getSelectedIndex() + 1);
+
+                            //ALTERANDO VIZINHANCA QUE É DO BRASIL                                
+                        } else if (status_Form.equals("alterar") && nomePais.getText().equals("Brasil") && entidadeUtilizada.equals("vizinhanca")) {
+                            selecionar_guia(FORM_GUIAS.getSelectedIndex() + 1);
+                        } else if (status_Form.equals("alterar")) {
+                            JOptionPane.showMessageDialog(Localizacao.this, "Não é permitido alterar Estados ou Cidades do Brasil", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
+                        }else if(status_Form.equals("cadastrar")){
+                            selecionar_guia(FORM_GUIAS.getSelectedIndex() + 1);
+                        }
+
                     }
                 }
 
@@ -1065,27 +1079,50 @@ public class Localizacao extends javax.swing.JFrame {
                 state.setName(txtNomeEstado_.getText());
                 state.setCountry(country);
 
-                //salvar estado
                 StateRepository BaseURL = retrofit.BaseURL().create(StateRepository.class);
-                Call<Boolean> callState = BaseURL.salvar(state);
-                callState.enqueue(new Callback<Boolean>() {
-                    @Override
-                    public void onResponse(Call<Boolean> call, Response<Boolean> rspns) {
-                        if (rspns.isSuccessful()) {
-                            Boolean ok = rspns.body();
-                            if (ok) {
-                                JOptionPane.showMessageDialog(Localizacao.this, "Dados cadastrados com sucesso");
-                                Home h = new Home();
-                                h.habilitarForm();
-                                Localizacao.this.dispose();
+
+                //salvar estado
+                if (status_Form.equals("cadastrar")) {
+                    Call<Boolean> callState = BaseURL.salvar(state);
+                    callState.enqueue(new Callback<Boolean>() {
+                        @Override
+                        public void onResponse(Call<Boolean> call, Response<Boolean> rspns) {
+                            if (rspns.isSuccessful()) {
+                                Boolean ok = rspns.body();
+                                if (ok) {
+                                    JOptionPane.showMessageDialog(Localizacao.this, "Dados cadastrados com sucesso");
+                                    Home h = new Home();
+                                    h.habilitarForm();
+                                    Localizacao.this.dispose();
+                                }
                             }
                         }
-                    }
 
-                    @Override
-                    public void onFailure(Call<Boolean> call, Throwable thrwbl) {
-                    }
-                });
+                        @Override
+                        public void onFailure(Call<Boolean> call, Throwable thrwbl) {
+                        }
+                    });
+                } else {
+                    Call<Boolean> callState = BaseURL.alterar(id_SelecionadoNaTabela_estado, state);
+                    callState.enqueue(new Callback<Boolean>() {
+                        @Override
+                        public void onResponse(Call<Boolean> call, Response<Boolean> rspns) {
+                            if (rspns.isSuccessful()) {
+                                Boolean ok = rspns.body();
+                                if (ok) {
+                                    JOptionPane.showMessageDialog(Localizacao.this, "Dados Alterados com sucesso");
+                                    Home h = new Home();
+                                    h.habilitarForm();
+                                    Localizacao.this.dispose();
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<Boolean> call, Throwable thrwbl) {
+                        }
+                    });
+                }
             }
 
             //Se estiver cadastrando cidade ou vizinhanca
@@ -1200,6 +1237,7 @@ public class Localizacao extends javax.swing.JFrame {
             id_SelecionadoNaTabela_estado = Long.parseLong(TABELA_Estados.getValueAt(TABELA_Estados.getSelectedRow(), 0).toString());
             txtNomeCidade_.setText("");
             txtNomeVizinhanca_.setText("");
+            txtNomeEstado_.setEnabled(true);
         }
     }//GEN-LAST:event_TABELA_EstadosMouseClicked
 
