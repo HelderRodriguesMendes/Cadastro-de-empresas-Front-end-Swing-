@@ -59,6 +59,7 @@ public class Home extends javax.swing.JFrame {
         alterar_Estado_ = new javax.swing.JMenuItem();
         alterar_Cidade_ = new javax.swing.JMenuItem();
         alterar_Vizinhanca_ = new javax.swing.JMenuItem();
+        alterar_companhia_ = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
         pesquisar_pais_ = new javax.swing.JMenuItem();
         pesquisar_estado_ = new javax.swing.JMenuItem();
@@ -162,6 +163,14 @@ public class Home extends javax.swing.JFrame {
             }
         });
         menu_pesquisar_Alterar.add(alterar_Vizinhanca_);
+
+        alterar_companhia_.setText("Companhia");
+        alterar_companhia_.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                alterar_companhia_ActionPerformed(evt);
+            }
+        });
+        menu_pesquisar_Alterar.add(alterar_companhia_);
 
         jMenuBar1.add(menu_pesquisar_Alterar);
 
@@ -327,7 +336,7 @@ public class Home extends javax.swing.JFrame {
 
     private void pesquisar_estado_ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pesquisar_estado_ActionPerformed
         Consultas c = new Consultas();
-        c.statusForm("estado");
+        c.statusForm("estado", "consulta");
         c.setTitle("Consultar Estado");
         c.getEstados();
         c.setVisible(true);
@@ -336,7 +345,7 @@ public class Home extends javax.swing.JFrame {
 
     private void pesquisar_cidade_ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pesquisar_cidade_ActionPerformed
         Consultas c = new Consultas();
-        c.statusForm("cidade");
+        c.statusForm("cidade", "consulta");
         c.setTitle("Consultar Cidade");
         c.getCidades();
         c.setVisible(true);
@@ -345,7 +354,7 @@ public class Home extends javax.swing.JFrame {
 
     private void pesquisar_vizinhanca_ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pesquisar_vizinhanca_ActionPerformed
         Consultas c = new Consultas();
-        c.statusForm("vizinhanca");
+        c.statusForm("vizinhanca", "consulta");
         c.setTitle("Consultar Vizinhança");
         c.getVizinhancas();
         c.setVisible(true);
@@ -354,12 +363,21 @@ public class Home extends javax.swing.JFrame {
 
     private void pesquisar_companhia_ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pesquisar_companhia_ActionPerformed
         Consultas c = new Consultas();
-        c.statusForm("companhia");
+        c.statusForm("companhia", "consulta");
         c.setTitle("Consultar Companhia");
         c.getCompanhias();
         c.setVisible(true);
         this.setVisible(false);
     }//GEN-LAST:event_pesquisar_companhia_ActionPerformed
+
+    private void alterar_companhia_ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_alterar_companhia_ActionPerformed
+        Consultas c = new Consultas();
+        c.statusForm("companhia", "alterar");
+        c.setTitle("Alterar Companhia");
+        c.getCompanhias();
+        c.setVisible(true);
+        this.setVisible(false);
+    }//GEN-LAST:event_alterar_companhia_ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -403,6 +421,7 @@ public class Home extends javax.swing.JFrame {
     private javax.swing.JMenuItem alterar_Estado_;
     private javax.swing.JMenuItem alterar_Pais_;
     private javax.swing.JMenuItem alterar_Vizinhanca_;
+    private javax.swing.JMenuItem alterar_companhia_;
     private javax.swing.JMenuItem cad_Cidade_;
     private javax.swing.JMenuItem cad_Estado_;
     private javax.swing.JMenuItem cad_Vizinhanca_;

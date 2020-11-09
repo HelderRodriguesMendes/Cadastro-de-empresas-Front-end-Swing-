@@ -32,4 +32,7 @@ public interface CompanhiaRepository {
     
     @GET("/company/findAllCompany/name")
     Call<List<Company>> getCompanys_name(@Query("name") String name);
+    
+    @GET("/company/findAllCompany/{id}")
+    Call<Company> getCompany_detalhada(@Path("id") Long id);
 }

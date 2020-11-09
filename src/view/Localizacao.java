@@ -22,7 +22,6 @@ import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -47,6 +46,7 @@ public class Localizacao extends javax.swing.JFrame {
     StateController stateController = new StateController();
     boolean jaBuscoCidades = false, jaListouTabelaEstados = false, jaListouTabelaCidades = false, jaListouTabelaNeighborhood = false;
     Long id_SelecionadoNaTabela_pais = null, id_SelecionadoNaTabela_estado = null, id_SelecionadoNaTabela_cidade = null, id_SelecionadoNaTabela_vizinhanca = null;
+    static Long ID;
 
     Country country = new Country();
     State state = new State();
@@ -237,8 +237,10 @@ public class Localizacao extends javax.swing.JFrame {
     }
 
     public void preencherCampus(Company company) {
-
-        JOptionPane.showMessageDialog(Localizacao.this, "Informe o País, Estado, Cidade e Vizinhança da empresa que está sendo cadastrada", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
+        if (status_Form.equals("cadastrar")) {
+            JOptionPane.showMessageDialog(Localizacao.this, "Informe o País, Estado, Cidade e Vizinhança da empresa que está sendo cadastrada", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
+        }
+        ID = company.getId();
         combo_estados_.setVisible(false);
         lblNomeCombo_estados.setVisible(false);
         jLabel26.setVisible(false);
@@ -1021,6 +1023,8 @@ public class Localizacao extends javax.swing.JFrame {
                             //ALTERANDO VIZINHANCA QUE É DO BRASIL                                
                         } else if (status_Form.equals("alterar") && txt_nomePais.getText().equals("Brasil") && entidadeUtilizada.equals("vizinhanca")) {
                             selecionar_guia(FORM_GUIAS.getSelectedIndex() + 1);
+                        } else if (status_Form.equals("alterar") && txt_nomePais.getText().equals("Brasil") && entidadeUtilizada.equals("companhia")) {
+                            selecionar_guia(FORM_GUIAS.getSelectedIndex() + 1);
                         } else if (status_Form.equals("alterar")) {
                             JOptionPane.showMessageDialog(Localizacao.this, "Não é permitido alterar Estados ou Cidades do Brasil", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
                         } else if (status_Form.equals("cadastrar")) {
@@ -1161,6 +1165,9 @@ public class Localizacao extends javax.swing.JFrame {
                     lblNomeCombo_cidades.setVisible(false);
                     combo_cidades_.setVisible(false);
                     jLabel25.setVisible(false);
+                    if (entidadeUtilizada.equals("companhia")) {
+                        btn_TODAS_CIDADES_.setVisible(true);
+                    }
                 }
 
                 CityRepository cityRepository = retrofit.BaseURL().create(CityRepository.class);
@@ -1551,13 +1558,37 @@ public class Localizacao extends javax.swing.JFrame {
             }
 
         } else if (entidadeUtilizada.equals("companhia")) {
+            Company company = new Company();
+            company.setId(ID);
+            neighborhood = preencherObjetoNeighborhood();
+            city = neighborhood.getCity();
+            state = city.getState();
+            country = state.getCountry();
+
+            company.setCountry(country);
+            company.setState(state);
+            company.setCity(city);
+            company.setNeighborhood(neighborhood);
 
             Companhia c = new Companhia();
-            c.preencherCampusLocalizacao(preencherObjetoNeighborhood());
+            System.out.println("STATUS FORM: " + status_Form);
             c.habilitarForm();
-            if (status_Form.equals("cadastrar")) {
-                c.setTitle("Cadastrar Companhia");
+            switch (status_Form) {
+                case "cadastrar":
+                    c.setTitle("Cadastrar Companhia");
+                    c.statusForm("cadastrar");
+                    break;
+                case "detalhar":
+                    c.setTitle("Detalhes da Companhia");
+                    break;
+                case "alterar":
+                    c.setTitle("Alterar Companhia");
+                    c.statusForm("alterar_company_Localizacao");
+                    break;
+                default:
+                    break;
             }
+            c.preencherCampusLocalizacao(company);
             Localizacao.this.dispose();
         }
 

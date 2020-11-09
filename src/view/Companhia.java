@@ -6,7 +6,6 @@
 package view;
 
 import cadastroempresas.retrofit.repository_retrofit.CompanhiaRepository;
-import cadastroempresas.retrofit.repository_retrofit.CountryRepository;
 import cadastroempresas.retrofit.service_retrofit.Retrofit_URL;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -30,7 +29,8 @@ import retrofit2.Response;
 public class Companhia extends javax.swing.JFrame {
 
     private static String STATUS_FORM, NOME_COMERCIAL, NOME_EMPRESA, ENDERECO, FONE, NUMERO;
-    
+    private static Long ID;
+
     Retrofit_URL retrofit = new Retrofit_URL();
 
     Neighborhood neighborhood = new Neighborhood();
@@ -51,13 +51,22 @@ public class Companhia extends javax.swing.JFrame {
                         JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null,
                         ObjButtons, ObjButtons[1]);
                 if (PromptResult == 0) {
-                    Home h = new Home();
-                    h.habilitarForm();
-                    Companhia.this.dispose();
+                    if (!STATUS_FORM.equals("alterar")) {
+                        Home h = new Home();
+                        h.habilitarForm();
+                        Companhia.this.dispose();
+                    } else {
+                        Consultas c = new Consultas();
+                        c.statusForm("companhia", "alterar");
+                        c.setTitle("Alterar Companhia");
+                        c.getCompanhias();
+                        c.setVisible(true);
+                        Companhia.this.dispose();
+                    }
                 }
             }
         });
-        
+
         soNumeros(txtNumeroFiscal);
     }
 
@@ -73,52 +82,70 @@ public class Companhia extends javax.swing.JFrame {
         txtVizinhanca_.setEnabled(true);
     }
 
-    public void preencherCampusLocalizacao(Neighborhood neighborhood) {
-        city = neighborhood.getCity();
-        state = city.getState();
-        country = state.getCountry();
-        
-        txtNomeComercial.setText(NOME_COMERCIAL);
-        txtNomeEmpresa.setText(NOME_EMPRESA);
-        txtEndereco.setText(ENDERECO);
-        txtTelefone.setText(FONE);
-        txtNumeroFiscal.setText(NUMERO);
+    public void preencherCampusLocalizacao(Company company) {
+        neighborhood = company.getNeighborhood();
+        city = company.getCity();
+        state = company.getState();
+        country = company.getCountry();
+        ID = company.getId();       
+
+        switch (STATUS_FORM) {
+            case "cadastrar":
+                txtNomeComercial.setText(NOME_COMERCIAL);
+                txtNomeEmpresa.setText(NOME_EMPRESA);
+                txtEndereco.setText(ENDERECO);
+                txtTelefone.setText(FONE);
+                txtNumeroFiscal.setText(NUMERO);
+                break;
+            case "alterar_company_Localizacao":
+                txtNomeComercial.setText(NOME_COMERCIAL);
+                txtNomeEmpresa.setText(NOME_EMPRESA);
+                txtEndereco.setText(ENDERECO);
+                txtTelefone.setText(FONE);
+                txtNumeroFiscal.setText(NUMERO);
+                break;
+            default:
+                txtNomeComercial.setText(company.getTradeName());
+                txtNomeEmpresa.setText(company.getCorporateName());
+                txtEndereco.setText(company.getAddress());
+                txtTelefone.setText(company.getPhone());
+                txtNumeroFiscal.setText(company.getFederalTaxNumber());
+                break;
+        }
 
         txtPais_.setText(country.getName());
-        if(country.getId() != null){
+        if (country.getId() != null) {
             lbl_idPais.setText(String.valueOf(country.getId()));
-        }        
+        }
         lbl_idPais.setVisible(false);
-        
 
         txtEstado_.setText(state.getName());
-        if(state.getId() != null){
+        if (state.getId() != null) {
             lbl_idEstado.setText(String.valueOf(state.getId()));
-        }        
+        }
         lbl_idEstado.setVisible(false);
-        
 
         txtCidade_.setText(city.getName());
-        if(city.getId() != null){
+        if (city.getId() != null) {
             lbl_idCidade.setText(String.valueOf(city.getId()));
-        }        
+        }
         lbl_idCidade.setVisible(false);
-        
 
         txtVizinhanca_.setText(neighborhood.getName());
-        if(neighborhood.getId() != null){
+        if (neighborhood.getId() != null) {
             lbl_idVizinhanca.setText(String.valueOf(neighborhood.getId()));
-        }       
+        }
         lbl_idVizinhanca.setVisible(false);
     }
- 
+
     //tambem pode ser utilizado para enviar dados para o formulario de localizacao
     public Company preencherObjeto() {
         company.setTradeName(txtNomeComercial.getText());
         company.setCorporateName(txtNomeEmpresa.getText());
         NOME_COMERCIAL = txtNomeComercial.getText();
         NOME_EMPRESA = txtNomeEmpresa.getText();
-                
+        company.setId(ID);
+
         if (!lbl_idPais.getText().equals("")) {
             country.setId(Long.valueOf(lbl_idPais.getText()));
         }
@@ -131,7 +158,6 @@ public class Companhia extends javax.swing.JFrame {
         }
         state.setName(txtEstado_.getText());
         company.setState(state);
-        
 
         city.setState(state);
         if (!lbl_idCidade.getText().equals("")) {
@@ -146,11 +172,11 @@ public class Companhia extends javax.swing.JFrame {
         }
         neighborhood.setName(txtVizinhanca_.getText());
         company.setNeighborhood(neighborhood);
-        
+
         company.setAddress(txtEndereco.getText());
         ENDERECO = txtEndereco.getText();
         company.setPhone(txtTelefone.getText());
-        System.out.println("telefone: " + txtTelefone.getText());
+
         FONE = txtTelefone.getText();
         company.setFederalTaxNumber(txtNumeroFiscal.getText());
         NUMERO = txtNumeroFiscal.getText();
@@ -158,58 +184,82 @@ public class Companhia extends javax.swing.JFrame {
 
         return company;
     }
-    
-    private boolean validarCampus(){
-        boolean ok = false;
-        
-        if(txtNomeComercial.getText().equals("")){
-            JOptionPane.showMessageDialog(Companhia.this, "Informe o Nome Comercial da Companhia", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
-            txtNomeComercial.requestFocus();
-        }else if(txtNomeEmpresa.getText().equals("")){
-            JOptionPane.showMessageDialog(Companhia.this, "Informe o Nome da Companhia", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
-            txtNomeEmpresa.requestFocus();
-        }else if(txtPais_.getText().equals("")){
-            JOptionPane.showMessageDialog(Companhia.this, "Informe o País da Companhia", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
-            txtPais_.requestFocus();
-        }else if(txtEndereco.getText().equals("")){
-            JOptionPane.showMessageDialog(Companhia.this, "Informe o Endereço da Companhia", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
-            txtEndereco.requestFocus();
-        }else if(txtTelefone.getText().equals("")){
-            JOptionPane.showMessageDialog(Companhia.this, "Informe o Telefone da Companhia", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
-            txtTelefone.requestFocus();
-        }else if(txtNumeroFiscal.getText().equals("")){
-            JOptionPane.showMessageDialog(Companhia.this, "Informe o Número Fiscal Federal da Companhia", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
-            txtNumeroFiscal.requestFocus();
-        }else if(verificarLength()){
-            ok = true;
-        }
-        return ok;
-    }
-    
-    private boolean verificarLength(){
+
+    private boolean validarCampus() {
         boolean ok = false;
 
-        if(txtNomeComercial.getText().length() < 2 || txtNomeComercial.getText().length() > 30){
-            JOptionPane.showMessageDialog(Companhia.this, "O Nome Comercial da Companhia deve conter entre 2 a 30 caracteres", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
+        if (txtNomeComercial.getText().equals("")) {
+            JOptionPane.showMessageDialog(Companhia.this, "Informe o Nome Comercial da Companhia", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
             txtNomeComercial.requestFocus();
-        }else if(txtNomeEmpresa.getText().length() < 2 || txtNomeEmpresa.getText().length() > 30){
-            JOptionPane.showMessageDialog(Companhia.this, "O Nome da Companhia deve conter entre 2 a 30 caracteres", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
+        } else if (txtNomeEmpresa.getText().equals("")) {
+            JOptionPane.showMessageDialog(Companhia.this, "Informe o Nome da Companhia", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
             txtNomeEmpresa.requestFocus();
-        }else if(txtEndereco.getText().length() < 2 || txtEndereco.getText().length() > 30){
-            JOptionPane.showMessageDialog(Companhia.this, "O Endereço da Companhia deve conter entre 2 a 30 caracteres", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
+        } else if (txtPais_.getText().equals("")) {
+            JOptionPane.showMessageDialog(Companhia.this, "Informe o País da Companhia", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
+            txtPais_.requestFocus();
+        } else if (txtEndereco.getText().equals("")) {
+            JOptionPane.showMessageDialog(Companhia.this, "Informe o Endereço da Companhia", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
             txtEndereco.requestFocus();
-        }else if(txtTelefone.getText().length() < 2 || txtTelefone.getText().length() > 15){
-            JOptionPane.showMessageDialog(Companhia.this, "O Endereço da Companhia deve conter entre 2 a 15 caracteres", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
+        } else if (txtTelefone.getText().equals("")) {
+            JOptionPane.showMessageDialog(Companhia.this, "Informe o Telefone da Companhia", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
             txtTelefone.requestFocus();
-        }else if(txtNumeroFiscal.getText().length() < 2 || txtNumeroFiscal.getText().length() > 30){
-            JOptionPane.showMessageDialog(Companhia.this, "O Número Fiscal Federal da Companhia deve conter entre 2 a 30 caracteres", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
-            txtTelefone.requestFocus();
-        }else{
+        } else if (txtNumeroFiscal.getText().equals("")) {
+            JOptionPane.showMessageDialog(Companhia.this, "Informe o Número Fiscal Federal da Companhia", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
+            txtNumeroFiscal.requestFocus();
+        } else if (verificarLength()) {
             ok = true;
         }
         return ok;
     }
-    
+
+    private boolean verificarLength() {
+        boolean ok = false;
+
+        if (txtNomeComercial.getText().length() < 2 || txtNomeComercial.getText().length() > 30) {
+            JOptionPane.showMessageDialog(Companhia.this, "O Nome Comercial da Companhia deve conter entre 2 a 30 caracteres", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
+            txtNomeComercial.requestFocus();
+        } else if (txtNomeEmpresa.getText().length() < 2 || txtNomeEmpresa.getText().length() > 30) {
+            JOptionPane.showMessageDialog(Companhia.this, "O Nome da Companhia deve conter entre 2 a 30 caracteres", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
+            txtNomeEmpresa.requestFocus();
+        } else if (txtEndereco.getText().length() < 2 || txtEndereco.getText().length() > 30) {
+            JOptionPane.showMessageDialog(Companhia.this, "O Endereço da Companhia deve conter entre 2 a 30 caracteres", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
+            txtEndereco.requestFocus();
+        } else if (txtTelefone.getText().length() < 2 || txtTelefone.getText().length() > 15) {
+            JOptionPane.showMessageDialog(Companhia.this, "O Endereço da Companhia deve conter entre 2 a 15 caracteres", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
+            txtTelefone.requestFocus();
+        } else if (txtNumeroFiscal.getText().length() < 2 || txtNumeroFiscal.getText().length() > 30) {
+            JOptionPane.showMessageDialog(Companhia.this, "O Número Fiscal Federal da Companhia deve conter entre 2 a 30 caracteres", "ATENÇÃO", JOptionPane.INFORMATION_MESSAGE);
+            txtTelefone.requestFocus();
+        } else {
+            ok = true;
+        }
+        return ok;
+    }
+
+    public void alterarDadosLocalizacao() {
+        String ObjButtons[] = {"Sim", "Não"};
+        int PromptResult = JOptionPane.showOptionDialog(null,
+                "Deseja alterar essa informação?", "ATENÇÃO",
+                JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null,
+                ObjButtons, ObjButtons[1]);
+        if (PromptResult == 0) {
+            Localizacao l = new Localizacao();
+            l.statusForm("alterar", "companhia");
+            l.selecionar_guia(0);
+            l.setTitle("Alterar Informações Sobre a Companhia");
+
+            NOME_COMERCIAL = preencherObjeto().getTradeName();
+            NOME_EMPRESA = preencherObjeto().getCorporateName();
+            ENDERECO = preencherObjeto().getAddress();
+            FONE = preencherObjeto().getPhone();
+            NUMERO = preencherObjeto().getFederalTaxNumber();            
+
+            l.preencherCampus(preencherObjeto());
+            l.setVisible(true);
+            this.setVisible(false);
+        }
+    }
+
     private static void soNumeros(JTextField campo) {
         campo.addKeyListener(new KeyAdapter() {
             @Override
@@ -228,6 +278,8 @@ public class Companhia extends javax.swing.JFrame {
         if (status.equals("cadastrar")) {
             bloquiarCampus();
             btn.setText("Cadastrar");
+        } else {
+            btn.setText("Alterar");
         }
     }
 
@@ -300,8 +352,19 @@ public class Companhia extends javax.swing.JFrame {
 
         jLabel4.setText("Estado:");
 
+        txtEstado_.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                txtEstado_MouseClicked(evt);
+            }
+        });
+
         jLabel5.setText("Cidade:");
 
+        txtCidade_.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                txtCidade_MouseClicked(evt);
+            }
+        });
         txtCidade_.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtCidade_ActionPerformed(evt);
@@ -309,6 +372,12 @@ public class Companhia extends javax.swing.JFrame {
         });
 
         jLabel6.setText("Vizinhança:");
+
+        txtVizinhanca_.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                txtVizinhanca_MouseClicked(evt);
+            }
+        });
 
         jLabel8.setText("Endereço:");
 
@@ -560,13 +629,17 @@ public class Companhia extends javax.swing.JFrame {
     }//GEN-LAST:event_txtPais_KeyPressed
 
     private void txtPais_MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtPais_MouseClicked
-        Localizacao l = new Localizacao();
-        l.statusForm("cadastrar", "companhia");
-        l.selecionar_guia(0);
-        l.setTitle("Cadastrar Informações Sobre a Companhia");
-        l.preencherCampus(preencherObjeto());
-        l.setVisible(true);
-        this.setVisible(false);
+        if (STATUS_FORM.equals("cadastrar")) {
+            Localizacao l = new Localizacao();
+            l.statusForm("cadastrar", "companhia");
+            l.selecionar_guia(0);
+            l.setTitle("Cadastrar Informações Sobre a Companhia");
+            l.preencherCampus(preencherObjeto());
+            l.setVisible(true);
+            this.setVisible(false);
+        } else if (STATUS_FORM.equals("alterar") || STATUS_FORM.equals("alterar_company_Localizacao")) {
+            alterarDadosLocalizacao();
+        }
     }//GEN-LAST:event_txtPais_MouseClicked
 
     private void txtCidade_ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCidade_ActionPerformed
@@ -574,31 +647,82 @@ public class Companhia extends javax.swing.JFrame {
     }//GEN-LAST:event_txtCidade_ActionPerformed
 
     private void btnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActionPerformed
-        if(validarCampus()){
-            //salvar pais
-            CompanhiaRepository BaseURL = retrofit.BaseURL().create(CompanhiaRepository.class);
-            Call<Boolean> callState = BaseURL.salvar(preencherObjeto());
-            callState.enqueue(new Callback<Boolean>() {
-                @Override
-                public void onResponse(Call<Boolean> call, Response<Boolean> rspns) {                    
-                    if (rspns.isSuccessful()) {
-                        Boolean ok = rspns.body();
-                        if (ok) {
-                            JOptionPane.showMessageDialog(Companhia.this, "Dados cadastrados com sucesso");
-                            Home h = new Home();
-                            h.habilitarForm();
-                            Companhia.this.dispose();
-                        }
-                        callState.cancel();
-                    }
-                }
+        if (validarCampus()) {
 
-                @Override
-                public void onFailure(Call<Boolean> call, Throwable thrwbl) {
+            CompanhiaRepository BaseURL = retrofit.BaseURL().create(CompanhiaRepository.class);
+
+            if (STATUS_FORM.equals("cadastrar")) {
+
+                Call<Boolean> callState = BaseURL.salvar(preencherObjeto());
+                callState.enqueue(new Callback<Boolean>() {
+                    @Override
+                    public void onResponse(Call<Boolean> call, Response<Boolean> rspns) {
+                        if (rspns.isSuccessful()) {
+                            Boolean ok = rspns.body();
+                            if (ok) {
+                                JOptionPane.showMessageDialog(Companhia.this, "Dados cadastrados com sucesso");
+                                Home h = new Home();
+                                h.habilitarForm();
+                                Companhia.this.dispose();
+                            }
+                            callState.cancel();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Boolean> call, Throwable thrwbl) {
+                    }
+                });
+            } else if (STATUS_FORM.equals("alterar") || STATUS_FORM.equals("alterar_company_Localizacao")) {
+                System.out.println("id: " + preencherObjeto().getId());
+                String ObjButtons[] = {"Sim", "Não"};
+                int PromptResult = JOptionPane.showOptionDialog(null,
+                        "Deseja alterar esses dados?", "ATENÇÃO",
+                        JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null,
+                        ObjButtons, ObjButtons[1]);
+                if (PromptResult == 0) {
+                    Call<Boolean> callState = BaseURL.alterar(preencherObjeto().getId(), preencherObjeto());
+                    callState.enqueue(new Callback<Boolean>() {
+                        @Override
+                        public void onResponse(Call<Boolean> call, Response<Boolean> rspns) {
+                            if (rspns.isSuccessful()) {
+                                Boolean ok = rspns.body();
+                                if (ok) {
+                                    JOptionPane.showMessageDialog(Companhia.this, "Dados cadastrados com sucesso");
+                                    Home h = new Home();
+                                    h.habilitarForm();
+                                    Companhia.this.dispose();
+                                }
+                                callState.cancel();
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<Boolean> call, Throwable thrwbl) {
+                        }
+                    });
                 }
-            });
+            }
         }
     }//GEN-LAST:event_btnActionPerformed
+
+    private void txtEstado_MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtEstado_MouseClicked
+        if (STATUS_FORM.equals("alterar") || STATUS_FORM.equals("alterar_company_Localizacao")) {
+            alterarDadosLocalizacao();
+        }
+    }//GEN-LAST:event_txtEstado_MouseClicked
+
+    private void txtCidade_MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtCidade_MouseClicked
+        if (STATUS_FORM.equals("alterar") || STATUS_FORM.equals("alterar_company_Localizacao")) {
+            alterarDadosLocalizacao();
+        }
+    }//GEN-LAST:event_txtCidade_MouseClicked
+
+    private void txtVizinhanca_MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtVizinhanca_MouseClicked
+        if (STATUS_FORM.equals("alterar") || STATUS_FORM.equals("alterar_company_Localizacao")) {
+            alterarDadosLocalizacao();
+        }
+    }//GEN-LAST:event_txtVizinhanca_MouseClicked
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn;

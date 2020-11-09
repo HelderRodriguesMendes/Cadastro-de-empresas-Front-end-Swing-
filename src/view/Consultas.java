@@ -33,7 +33,7 @@ import retrofit2.Response;
  */
 public class Consultas extends javax.swing.JFrame {
 
-    static String entidadeUtilizada;
+    static String entidadeUtilizada, STATUS_FORM;
 
     Retrofit_URL retrofit = new Retrofit_URL();
 
@@ -62,8 +62,9 @@ public class Consultas extends javax.swing.JFrame {
         });
     }
 
-    public void statusForm(String entidade) {
+    public void statusForm(String entidade, String status) {
         entidadeUtilizada = entidade;
+        STATUS_FORM = status;
     }
 
     public void getEstados() {
@@ -336,6 +337,11 @@ public class Consultas extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
+        TABELA.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                TABELAMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(TABELA);
         if (TABELA.getColumnModel().getColumnCount() > 0) {
             TABELA.getColumnModel().getColumn(0).setResizable(false);
@@ -390,31 +396,61 @@ public class Consultas extends javax.swing.JFrame {
                     getEstados_name(txtNome.getText());
                 } else {
                     getEstados();
-                }   break;
+                }
+                break;
             case "cidade":
                 if (!txtNome.getText().equals("")) {
                     getCidades_name(txtNome.getText());
                 } else {
                     getCidades();
-                }   break;
+                }
+                break;
             case "vizinhanca":
                 if (!txtNome.getText().equals("")) {
                     getVizinhancas_name(txtNome.getText());
                 } else {
                     getVizinhancas();
-                }   break;
+                }
+                break;
             case "companhia":
                 if (!txtNome.getText().equals("")) {
                     getCompanhias_name(txtNome.getText());
-                }else{
+                } else {
                     getCompanhias();
-                }   break;
+                }
+                break;
             default:
                 break;
         }
 
 
     }//GEN-LAST:event_jLabel3MouseClicked
+
+    private void TABELAMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TABELAMouseClicked
+        if (entidadeUtilizada.equals("companhia") && STATUS_FORM.equals("alterar")) {
+            long id = Long.parseLong(TABELA.getValueAt(TABELA.getSelectedRow(), 0).toString());
+            Call<Company> callState = BaseURL_companhia.getCompany_detalhada(id);
+            callState.enqueue(new Callback<Company>() {
+                @Override
+                public void onResponse(Call<Company> call, Response<Company> rspns) {
+                    if (rspns.isSuccessful()) {
+                        Company company = rspns.body();
+
+                        Companhia c = new Companhia();
+                        c.statusForm("alterar");
+                        c.setTitle("Alterar Companhia");
+                        c.preencherCampusLocalizacao(company);
+                        c.setVisible(true);
+                        Consultas.this.setVisible(false);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Company> call, Throwable thrwbl) {
+                }
+            });
+        }
+    }//GEN-LAST:event_TABELAMouseClicked
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
